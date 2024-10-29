@@ -1,0 +1,130 @@
+{%extends "base.html"%}
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/css-auth/login.css')}}">
+{% endblock %}
+
+{% block style %}
+<style>
+    .form-floating .custom-input {
+        height: 50px;
+        /* Chiều cao tùy chỉnh */
+        padding-right: 50px;
+        /* Điều chỉnh padding */
+        background: #0000005c;
+        border-width: 0;
+        border-radius: 10px;
+        color: white;
+    }
+
+    /* Đảm bảo label căn chỉnh đúng */
+    .form-floating>label {
+        padding: 0 12px;
+        line-height: 43px;
+        /* Đồng bộ chiều cao của input */
+    }
+
+    .form-check-input {
+        background: #f1f1f199;
+    }
+
+
+    .sign_in_btn {
+        background: rgba(0, 0, 255, 0.538);
+        border-width: 0;
+        border-radius: 30px;
+        height: 50px;
+        width: 50%;
+    }
+</style>
+{% endblock %}
+
+{%block content%}
+<div class="content_container bg-primary vw-100 vh-100 position-relative text-white ">
+    <img src="../../static/assets/img/bg_img.jpg" class="bg_img img position-absolute top-0 start-0" alt="..." />
+    <!-- <div class="layout_form position-absolute top-50 start-50 translate-middle"> -->
+        <div class="layout_form">
+        <div class="title mt-5 mb-5 text-white">
+            <p><b>Start sign up</b></p>
+            <h1 class="mt=0">Go to my website.</h1>
+            <p><span><b>Don't have an account yet? </b></span><a href="{{ url_for('register')}}"
+                    class="text-primary">Register for free</a>
+            </p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form class=" " action="#" method="POST">
+            <div class="form-floating mb-3 position-relative">
+                <input name="user_email" type="email" class="form-control custom-input " id="floatingInput"
+                    placeholder="name@example.com">
+                <label for="floatingInput">Email address</label>
+                <div class="email_icon position-absolute ">
+                    <img src="../../static/assets/icons/email.png" width="30px" height="30px" alt="email">
+                </div>
+            </div>
+            <div class="form-floating mb-3 position-relative ">
+                <input name="user_password" type="password" class="form-control custom-input" id="floatingPassword"
+                    placeholder="Password">
+                <label for="floatingPassword">Password</label>
+                <div class="password_icon position-absolute">
+                    <img id="password_icon" src="../../static/assets/icons/hidden.png" width="30px" height="30px"
+                        alt="password" onclick="togglePasswordVisibility()">
+                </div>
+            </div>
+
+
+            <div class="d-flex mb-4">
+                <div class="form-check col">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                    <label class="form-check-label" for="flexCheckChecked">
+                        Remember me
+                    </label>
+                </div>
+                <div class="forgot_pass col text-end">
+                    <a href="" class="forgot_a text-primary">Forgot password?</a>
+                </div>
+
+            </div>
+            <div class="mb-4 d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary sign_in_btn w-100"><b>Sign in</b></button>
+            </div>
+        </form>
+        <div class="continue_with mb-4 row g-3">
+            <div class="col-4 text-white">
+                <hr>
+            </div>
+            <div class="col-4">
+                <p class="txt  text-center">or continue with</p>
+            </div>
+            <div class="col-4 text-white">
+                <hr>
+            </div>
+
+        </div>
+        <div class="buttons row mb-4">
+            <div class="with_google col-4">
+                <button class="gg_btn btn">
+                    <img src="../../static/assets/icons/gg.png" alt="" height="25" width="25">
+                </button>
+            </div>
+            <div class="with_google col-4">
+                <button class="gg_btn btn">
+                    <img src="../../static/assets/icons/github.png" alt="" height="25" width="25">
+                </button>
+            </div>
+            <div class="with_google col-4">
+                <button class="gg_btn btn">
+                    <img src="../../static/assets/icons/facebook.png" alt="" height="25" width="25">
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="{{url_for('static',filename='assets/js/js-auth/login.js')}}"></script>
+{%endblock%}

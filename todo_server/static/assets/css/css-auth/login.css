@@ -1,0 +1,77 @@
+* {
+  box-sizing: border-box;
+}
+a:link {
+    text-decoration: none;
+    color: red;
+    font-weight: 700;
+}
+
+.content_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.bg_img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.layout_form {
+  min-width: 400px;
+  width: 33%;
+  z-index: 3;
+  padding: 0 50px;
+  border-radius: 10px;
+  background: #0000007f;
+}
+
+.buttons .col-4 .btn {
+    background-color: #ffffff;
+    width: 95%;
+}
+
+
+.email_icon, .password_icon {
+  bottom: 20%;
+  right: 3%;
+  cursor: pointer;
+}
+
+
+/* Small devices (phones, less than 600px) */
+@media only screen and (max-width: 600px) {
+  
+  .layout_form {
+    padding: 0 25px;
+  }
+
+
+  .title h1 {
+      font-size: 1.4rem; /* Adjust heading size for mobile */
+  }
+}
+
+/* Medium devices (tablets, 600px and up) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+  .layout_form {
+    padding: 0 25px;
+  }
+
+
+  .title h1 {
+      font-size: 1.5rem; /* Adjust heading size for mobile */
+  }
+
+}
+
+/* Large devices (laptops/desktops, 1024px and up) */
+@media only screen and (min-width: 1024px) {
+  .layout_form {
+    padding: 0 35px;
+  }
+}

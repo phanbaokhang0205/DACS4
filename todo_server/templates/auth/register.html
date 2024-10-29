@@ -1,0 +1,134 @@
+{%extends "base.html"%}
+{% block css %}
+<link rel="stylesheet" href="{{url_for('static',filename='assets/css/css-auth/register.css')}}">
+{% endblock %}
+
+{% block style %}
+<style>
+    .form-floating .custom-input {
+        height: 50px;
+        /* Chiều cao tùy chỉnh */
+        padding-right: 50px;
+        /* Điều chỉnh padding */
+        background: #0000005c;
+        border-width: 0;
+        border-radius: 10px;
+        color: white;
+    }
+
+    /* Đảm bảo label căn chỉnh đúng */
+    .form-floating>label {
+        padding: 0 20px;
+        line-height: 43px;
+        /* Đồng bộ chiều cao của input */
+    }
+
+    .form-check-input {
+        background: #f1f1f199;
+    }
+
+
+    .sign_in_btn {
+        background: rgba(0, 0, 255, 0.538);
+        border-width: 0;
+        border-radius: 30px;
+        height: 50px;
+        width: 50%;
+    }
+</style>
+{% endblock %}
+
+
+{%block content%}
+<div class="bg-primary vw-100 vh-100 position-relative text-white ">
+    <img src="../../static/assets/img/bg_img.jpg" class="bg_img img position-absolute top-0 start-0" alt="..." />
+    <div class="layout_form position-absolute top-50 start-50 translate-middle">
+        <div class="title mt-5 mb-5 text-white">
+            <p><b>Start for free</b></p>
+            <h1 class="mt=0">Create new account.</h1>
+            <p><span><b>Already A Memmber? </b></span><a href="{{url_for('login')}}" class="text-primary">Sign up</a>
+            </p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <form class="col" action="#" method="POST">
+            <div class="row g-2 mb-3">
+                <div class="col-6 form-floating position-relative">
+                    <input name="f_name" type="text" class="form-control custom-input " id="f_name" placeholder="first name...">
+                    <label for="f_name">First Name</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/info.png" alt="">
+                    </div>
+                </div>
+                <div class="col-6 form-floating position-relative ">
+                    <input name="l_name" type="text" class="form-control custom-input" id="l_name" placeholder="Last name...">
+                    <label for="l_name">Last Name</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/info.png"  alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-9 form-floating position-relative">
+                    <input name="email" type="email" class="form-control custom-input " id="floatingInput"
+                        placeholder="name@example.com">
+                    <label for="floatingInput">Email address</label>
+                    <div class="email_icon position-absolute ">
+                        <img class="icons" src="../../static/assets/icons/email.png"  alt="email">
+                    </div>
+                </div>
+                <div class="col input-group dropend">
+                    <input type="hidden" name="gender" id="genderInput" value="">
+                    <button class="btn btn-outline-secondary  w-100" id="genderButton" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">Gender</button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="setGender('Male')">Male</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="setGender('Female')">Female</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#" onclick="setGender('Other')">Other</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-9 form-floating position-relative">
+                    <input name="password" type="password" class="form-control custom-input" id="floatingPassword"
+                        placeholder="Password">
+                    <label for="floatingPassword">Password</label>
+                    <div class="password_icon position-absolute">
+                        <img class="icons" id="pass_eye" src="../../static/assets/icons/hidden.png" alt="password" onclick="togglePass()">
+                    </div>
+                </div>
+                <div class="col form-floating position-relative">
+                    <input name="age" type="text" class="form-control custom-input" id="age" placeholder="Age...">
+                    <label for="age">Age</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/info.png"  alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col form-floating position-relative">
+                    <input name="pass_again" type="password" class="form-control custom-input" id="pass_again" placeholder="Password">
+                    <label for="pass_again">Password again</label>
+                    <div class="password_icon position-absolute">
+                        <img class="icons" id="pass_again_eye" src="../../static/assets/icons/hidden.png"  height="30px" alt="pass_again" onclick="togglePassAgain()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 d-flex justify-content-center mb-5">
+                <button type="submit" class="btn btn-primary sign_in_btn w-100"><b>Register</b></button>
+            </div>
+        </form>
+
+    </div>
+    <script src="{{url_for('static',filename='assets/js/js-auth/register.js')}}"></script>
+</div>
+{%endblock%}

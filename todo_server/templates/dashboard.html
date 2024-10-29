@@ -1,0 +1,187 @@
+{% extends "app.html" %}
+
+{% block title %}Dashboard Page{% endblock %}
+
+{% block content %}
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <div class="page-name 	mb-4">
+                <h4 class="m-0"><img src="../static/assets/img/profile.jpg" class="mr-1" alt="profile" /> Welcome Huy Khang! Let's do some tasks!</h4>
+                <label>Sun, 29 Nov 2019</label>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-12 col-sm-12 col-12">
+                    <div class="breadcrumb-path ">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}"><img src="../static/assets/img/dash.png"
+                                        class="mr-3" alt="breadcrumb" />Home</a>
+                            </li>
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill1 ">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Projects</label>
+                                <h4>111</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/project.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill2 ">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Important</label>
+                                <h4>30</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/important.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill3 ">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Task</label>
+                                <h4>9</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/task.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill1 " style="background-color: #00cd00; border-radius: 10px;">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Todo</label>
+                                <h4>65</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/to-do-list.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill2 " style="background-color: #008da3; border-radius: 10px;">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Doing</label>
+                                <h4>43</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/check-list.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                    <div class="card board1 fill3 " style="background-color: rebeccapurple; border-radius: 10px;">
+                        <div class="card-body">
+                            <div class="card_widget_header">
+                                <label>Done</label>
+                                <h4>7</h4>
+                            </div>
+                            <div class="card_widget_img">
+                                <img src="../static/assets/img/done.png" style="height: 65px; width: 65px;" alt="card-img" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-12 col-sm-12 col-12 d-flex">
+                    <div class="card card-list flex-fill">
+                        <div class="card-header ">
+                            <h4 class="card-title">Recently completed tasks</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="team-list">
+                                <div class="team-view">
+                                    <div class="team-img">
+                                        <img src="../static/assets/img/profiles/avatar-03.jpg" alt="avatar" />
+                                    </div>
+                                    <div class="team-content">
+                                        <label>Lab 1</label>
+                                        <span>Python</span>
+                                    </div>
+                                </div>
+                                <div class="team-action">
+                                    <ul>
+                                        <li><a><i data-feather="trash-2"></i></a></li>
+                                        <li><a><i data-feather="edit-2"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-list">
+                                <div class="team-view">
+                                    <div class="team-img">
+                                        <img src="../static/assets/img/profiles/avatar-04.jpg" alt="avatar" />
+                                    </div>
+                                    <div class="team-content">
+                                        <label>Lab 2</label>
+                                        <span>Java</span>
+                                    </div>
+                                </div>
+                                <div class="team-action">
+                                    <ul>
+                                        <li><a><i data-feather="trash-2"></i></a></li>
+                                        <li><a><i data-feather="edit-2"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-list">
+                                <div class="team-view">
+                                    <div class="team-img">
+                                        <img src="../static/assets/img/profiles/avatar-06.jpg" alt="avatar" />
+                                    </div>
+                                    <div class="team-content">
+                                        <label>Lab 3</label>
+                                        <span>Python</span>
+                                    </div>
+                                </div>
+                                <div class="team-action">
+                                    <ul>
+                                        <li><a><i data-feather="trash-2"></i></a></li>
+                                        <li><a><i data-feather="edit-2"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="team-list">
+                                <div class="team-view">
+                                    <div class="team-img">
+                                        <img src="../static/assets/img/profiles/avatar-11.jpg" alt="avatar" />
+                                    </div>
+                                    <div class="team-content">
+                                        <label>Lab 4</label>
+                                        <span>JS</span>
+                                    </div>
+                                </div>
+                                <div class="team-action">
+                                    <ul>
+                                        <li><a><i data-feather="trash-2"></i></a></li>
+                                        <li><a><i data-feather="edit-2"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

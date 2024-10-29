@@ -1,0 +1,228 @@
+{% extends "app.html" %}
+
+{% block title %}Project Page{% endblock %}
+
+{% block content %}
+    <div class="page-wrapper">
+        <div class="content container-fluid">
+            <div class="row">
+                <div class="col-xl-12 col-sm-12 col-12">
+                    <div class="breadcrumb-path mb-4">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}"><img src="../static/assets/img/dash.png"
+                                        class="mr-2" alt="breadcrumb" />Home</a>
+                            </li>
+                            <li class="breadcrumb-item active"> Projects</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                    <div class="head-link-set">
+                        <form style="display: flex;">
+                            <input type="text" class="form-control" placeholder="Search here">
+                            <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;" type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
+                        </form>
+                        <a class="btn-add" data-toggle="modal" data-target="#addproject"><i data-feather="plus"></i> Add Project</a>
+                    </div>
+                </div>
+
+                <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                    <div class="card">
+                        <div class="table-heading">
+                            <h2>All Projects</h2>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table  custom-table no-footer">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Summary</th>
+                                        <th>Tasks</th>
+                                        <th>Due date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="table-img">
+                                                <a href="profile.html">
+                                                    <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
+                                                        class="img-table" /><label class="action_label">Project 1</label>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label > Building todo Website</label>
+                                        </td>
+                                        <td>
+                                            <label class="action_label2"> 21</label>
+                                        </td>
+                                        <td><label>10/10/2024</label></td>
+                                        <td class="tab-select">
+                                            <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="table-img">
+                                                <a href="profile.html">
+                                                    <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
+                                                        class="img-table" /><label class="action_label">Project 1</label>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label > Building todo Website</label>
+                                        </td>
+                                        <td>
+                                            <label class="action_label2"> 21</label>
+                                        </td>
+                                        <td><label>10/10/2024</label></td>
+                                        <td class="tab-select">
+                                            <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="table-img">
+                                                <a href="profile.html">
+                                                    <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
+                                                        class="img-table" /><label class="action_label">Project 1</label>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label > Building todo Website</label>
+                                        </td>
+                                        <td>
+                                            <label class="action_label2"> 21</label>
+                                        </td>
+                                        <td><label>10/10/2024</label></td>
+                                        <td class="tab-select">
+                                            <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="table-img">
+                                                <a href="profile.html">
+                                                    <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
+                                                        class="img-table" /><label class="action_label">Project 1</label>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label > Building todo Website</label>
+                                        </td>
+                                        <td>
+                                            <label class="action_label2"> 21</label>
+                                        </td>
+                                        <td><label>10/10/2024</label></td>
+                                        <td class="tab-select">
+                                            <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
+                                                <option value="active">Active</option>
+                                                <option value="inactive">Inactive</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            // Tìm tất cả các phần tử select và thiết lập màu ban đầu
+                                            var selects = document.querySelectorAll('.select');
+                                            selects.forEach(function(select) {
+                                                changeColor(select);  // Gọi hàm để thiết lập màu ban đầu dựa trên giá trị hiện tại
+                                            });
+                                        });
+                                    
+                                        function changeColor(selectElement) {
+                                            if (selectElement.value === "active") {
+                                                selectElement.style.backgroundColor = "#029cd5";  // Màu xanh dương cho Active
+                                                selectElement.style.color = "white";  // Màu chữ trắng
+                                            } else if (selectElement.value === "inactive") {
+                                                selectElement.style.backgroundColor = "#fe7a33";  // Màu đỏ cho Inactive
+                                                selectElement.style.color = "white";  // Màu chữ trắng
+                                            }
+                                        }
+                                    </script>                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="customize_popup">
+        <div class="modal fade" id="addproject" tabindex="-1" aria-labelledby="staticBackdropLabela"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabela">Create New Project</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <input type="text" placeholder="Project Name">
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <textarea style="margin-top: 20px; width: 100%; padding: 10px; border: 0.1px solid rgb(181, 181, 181); font-size: 15px; box-sizing: border-box;" placeholder="Description" rows="4" cols="50"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Due Date</b></label>
+                                <input type="date" style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Status</b></label>
+                                <select name="Status">
+                                    <option value="Danger">Todo</option>
+                                    <option value="Warning">Doing</option>
+                                    <option value="Success">Success</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Remind me</b></label>
+                                <input type="date" style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="button" class="btn btn-primary">Add</button>
+                            </div>
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

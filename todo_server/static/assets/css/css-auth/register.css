@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+}
+
+a:link {
+  text-decoration: none;
+  color: red;
+  font-weight: 700;
+}
+
+.icons {
+  width: 30px;
+  height: 30px;
+}
+
+.bg_img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.layout_form {
+  min-width: 400px;
+  width: 43%;
+  z-index: 3;
+  padding: 0 50px;
+  border-radius: 10px;
+  background: #0000007f;
+}
+
+
+
+.info_icon {
+  bottom: 20%;
+  right: 10%;
+  cursor: pointer;
+}
+.email_icon, .password_icon {
+    bottom: 20%;
+    right: 5%;
+    cursor: pointer;
+}
+#genderButton {
+  background: #0000007f;
+  border-width: 0;
+  border-radius: 10px;
+
+}
+
+ul.dropdown-menu {
+  background: #8e8e8ea6;
+}
+
+/* Small devices (phones, less than 600px) */
+@media only screen and (max-width: 600px) {
+  
+  .layout_form {
+    padding: 0 25px;
+  }
+
+
+  .title h1 {
+      font-size: 1.4rem; /* Adjust heading size for mobile */
+  }
+}
+
+/* Medium devices (tablets, 600px and up) */
+@media only screen and (min-width: 600px) and (max-width: 1024px) {
+  .layout_form {
+    padding: 0 25px;
+  }
+
+
+  .title h1 {
+      font-size: 1.5rem; /* Adjust heading size for mobile */
+  }
+
+}
+
+/* Large devices (laptops/desktops, 1024px and up) */
+@media only screen and (min-width: 1024px) {
+  .layout_form {
+    padding: 0 35px;
+  }
+}
