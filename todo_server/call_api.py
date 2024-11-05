@@ -77,6 +77,16 @@ def delete_task(task_id):
     except Exception as e:
         return f"An error occurred: {e}"
     
+def update_task(task_id, data):
+    try:
+        response = requests.put(f'{BASE_URL}/tasks/{task_id}', json=data)
+        if response.status_code == 200:
+            return response.json()['message']
+        else:
+            return response.json()['error']
+    except Exception as e:
+        return f"An error occurred: {e}"
+    
 # ======================= PROJECT =================================
 def getProjects():
     base_url = f'{BASE_URL}/projects'
