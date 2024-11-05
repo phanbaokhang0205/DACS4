@@ -66,8 +66,10 @@ def dashboard():
 
 @app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
+    projects = getProjects()
+
     if request.method == 'POST':
-        try:
+        try:    
             user_id = 1
             project_id = request.form.get('project_id')
             title = request.form.get('title')
@@ -95,12 +97,13 @@ def tasks():
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
             flash(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
-
-    projects = getProjects()
-    tasks = getTasks()
-    return render_template('tasks.html', projects = projects, tasks = tasks)
-
-
+    else:
+        title = request.args.get('search')
+        if title:
+            tasks = getTaskBySearching(title)
+        else:
+            tasks = getTasks()
+    return render_template('tasks.html', projects=projects, tasks = tasks)
 
 @app.route('/users', methods=['GET','POST'])
 def users():

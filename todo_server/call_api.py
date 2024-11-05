@@ -88,3 +88,22 @@ def addUser():
 
 def checkUser():
     pass
+
+def getTaskBySearching(keywords):
+    base_url = 'http://127.0.0.1:5000/tasks/search'
+    params = {
+        'title': keywords
+    }
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(base_url, params=params)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nế    u có lỗi
