@@ -44,7 +44,6 @@
     <img src="../../static/assets/img/bg_img.jpg" class="bg_img img position-absolute top-0 start-0" alt="..." />
     <div class="layout_form position-absolute top-50 start-50 translate-middle">
         <div class="title mt-5 mb-5 text-white">
-            <p><b>Start for free</b></p>
             <h1 class="mt=0">Create new account.</h1>
             <p><span><b>Already A Memmber? </b></span><a href="{{url_for('login')}}" class="text-primary">Sign up</a>
             </p>
@@ -56,20 +55,36 @@
         </div>
         {% endif %}
         
-        <form class="col" action="#" method="POST">
+        <form class="col" method="POST">
             <div class="row g-2 mb-3">
                 <div class="col-6 form-floating position-relative">
-                    <input name="f_name" type="text" class="form-control custom-input " id="f_name" placeholder="first name...">
-                    <label for="f_name">First Name</label>
+                    <input name="fullname" type="text" class="form-control custom-input " placeholder="fullname">
+                    <label for="fullname">Full Name</label>
                     <div class="info_icon position-absolute">
                         <img class="icons" src="../../static/assets/icons/info.png" alt="">
                     </div>
                 </div>
                 <div class="col-6 form-floating position-relative ">
-                    <input name="l_name" type="text" class="form-control custom-input" id="l_name" placeholder="Last name...">
-                    <label for="l_name">Last Name</label>
+                    <input name="username" type="text" class="form-control custom-input" placeholder="username">
+                    <label for="username">User Name</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/info.png"  alt="">
+                        <img class="icons" src="../../static/assets/icons/register_username.png"  alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-6 form-floating position-relative">
+                    <input name="address" type="text" class="form-control custom-input " placeholder="address">
+                    <label for="address">Address</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/register_add.png" alt="">
+                    </div>
+                </div>
+                <div class="col-6 form-floating position-relative ">
+                    <input name="phone" type="text" class="form-control custom-input" placeholder="phone">
+                    <label for="phone">Your phone</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/register_telephone.png"  alt="" >
                     </div>
                 </div>
             </div>
@@ -79,11 +94,11 @@
                         placeholder="name@example.com">
                     <label for="floatingInput">Email address</label>
                     <div class="email_icon position-absolute ">
-                        <img class="icons" src="../../static/assets/icons/email.png"  alt="email">
+                        <img class="icons" src="../../static/assets/icons/email.png"  alt="email" >
                     </div>
                 </div>
                 <div class="col input-group dropend">
-                    <input type="hidden" name="gender" id="genderInput" value="">
+                    <input type="hidden" name="gender" id="genderInput" value="" placeholder="name@example.com">
                     <button class="btn btn-outline-secondary  w-100" id="genderButton" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false">Gender</button>
                     <ul class="dropdown-menu">
@@ -106,15 +121,16 @@
                     </div>
                 </div>
                 <div class="col form-floating position-relative">
-                    <input name="age" type="text" class="form-control custom-input" id="age" placeholder="Age...">
+                    <input name="age" type="text" class="form-control custom-input" id="age" placeholder="age">
                     <label for="age">Age</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/info.png"  alt="">
+                        <img class="icons" src="../../static/assets/icons/register_age.png"  alt="">
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
-                <div class="col form-floating position-relative">
+                <div class="col-12 form-floating position-relative">
                     <input name="pass_again" type="password" class="form-control custom-input" id="pass_again" placeholder="Password">
                     <label for="pass_again">Password again</label>
                     <div class="password_icon position-absolute">
@@ -122,6 +138,17 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-12 form-floating position-relative ">
+                    <input name="avatar" type="text" class="form-control custom-input" placeholder="link">
+                    <label for="avatar">Link avatar</label>
+                    <div class="info_icon position-absolute">
+                        <img class="icons" src="../../static/assets/icons/register_avatar.png"  alt="" aria-placeholder="Avatar">
+                    </div>
+                </div>
+            </div>
+            
 
             <div class="mt-5 d-flex justify-content-center mb-5">
                 <button type="submit" class="btn btn-primary sign_in_btn w-100"><b>Register</b></button>

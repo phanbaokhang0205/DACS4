@@ -3,6 +3,7 @@ import socket, threading
 from datetime import datetime
 from call_api import *
 from server.index import App
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -47,9 +48,51 @@ def log_request_info(response):
 def login():
     return render_template('auth/login.html')
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        try:
+            fullname = request.form.get('fullname')
+            age = request.form.get('age')
+            gender = request.form.get('gender')
+            phone = request.form.get('phone')
+            address = request.form.get('address')
+            email = request.form.get('email')
+            username = request.form.get('username')
+            password = request.form.get('password')
+            password_again = request.form.get('pass_again')
+            avatar = request.form.get('avatar')
+            create_at = datetime.now().isoformat()
+
+             # Kiểm tra nếu password và password_again khớp
+            if password != password_again:
+                flash("Mật khẩu và xác nhận mật khẩu không khớp!", "error")
+                return redirect(url_for('register'))
+
+            data = {
+                "fullname": fullname,
+                "age": age,
+                "gender": gender,
+                "phone": phone,
+                "address": address,
+                "email": email,
+                "username": username,
+                "password": password,
+                "avatar": avatar,
+                "create_at": create_at,
+            }
+            addUser(**data)
+
+            flash("Dữ liệu đã được xử lý thành công!", "success")
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            # Xử lý lỗi, ghi log và thông báo cho người dùng
+            print(f"Đã xảy ra lỗi: {e}")
+            flash(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+    
     return render_template('auth/register.html')
+
+
 
 @app.route('/logout')
 def logout():
@@ -61,7 +104,6 @@ def project():
 
 @app.route('/dashboard')
 def dashboard():
-    
     return render_template('dashboard.html')
 
 @app.route('/tasks', methods=['GET', 'POST'])
@@ -102,13 +144,15 @@ def tasks():
 
 
 
-@app.route('/users', methods=['GET','POST'])
-def users():
-    if request.method == 'POST':
-        pio = request.form.get('priority')
-        print(pio)
-    users= getUsers()
-    return render_template('users.html', users=users)
+# @app.route('/users', methods=['GET','POST'])
+# def users():
+#     if request.method == 'POST':
+#         pio = request.form.get('priority')
+#         print(pio)
+#     users= getUsers()
+#     return render_template('users.html', users=users)
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'your_secret_key'  # Thay thế bằng chuỗi bí mật của bạn

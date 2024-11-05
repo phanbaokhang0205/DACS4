@@ -20,25 +20,39 @@ def getUsers():
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
     
-def getTasks():
-    base_url = 'http://127.0.0.1:5000/tasks'
-
+def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
+    url = 'http://127.0.0.1:5000/users'
+    payload = {
+        "fullname": fullname,
+        "age": age,
+        "gender": gender,
+        "phone": phone,
+        "address": address,
+        "email": email,
+        "username": username,
+        "password": password,
+        "avatar": avatar,
+        "create_at": create_at,
+    }
+    
+    # Gui yeu cau post
     try:
-        # Gửi yêu cầu GET đến API
-        response = requests.get(base_url)
-        
-        if response.status_code == 200:
-            return response.json() 
+        response = requests.post(url, json=payload)
+        if response.status_code == 201:
+            print("User register successfully.")
+            return response.json()
         else:
-            print(f"Không thể lấy dữ liệu: {response.status_code}")
-            return []
+            print(f"Failed to register: {response.status_code}")
+            return response.json()
 
     except requests.exceptions.RequestException as e:
-        print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+            print(f"Error occurred: {e}")
+            return None
+
+
     
-def getProjects():
-    base_url = 'http://127.0.0.1:5000/projects'
+def getTasks():
+    base_url = 'http://127.0.0.1:5000/tasks'
 
     try:
         # Gửi yêu cầu GET đến API
@@ -83,8 +97,28 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
         return None
 
 
-def addUser():
-    pass
+
+def getProjects():
+    base_url = 'http://127.0.0.1:5000/projects'
+
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(base_url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
+
+
+
+
 
 def checkUser():
     pass
