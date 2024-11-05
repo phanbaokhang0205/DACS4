@@ -8,11 +8,22 @@
 <body>
     <h1>Danh sách người dùng</h1>
     <ul>
-        {% for user in users %}
-            <li>ID: {{ user.id }}, Username: {{ user.username }}</li>
+        {% for p in project %}
+            <li>ID: {{ p.id }}, Username: {{ p.name }}</li>
         {% else %}
             <li>Không có người dùng nào.</li>
         {% endfor %}
     </ul>
+    <form action="" method="post">
+        <div class=" form-popup m-0">
+            <label><b>Priority</b></label>
+            <select name="priority">
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+            </select>
+        </div>
+        <input type="submit" value="submit">
+    </form>
 </body>
 </html>

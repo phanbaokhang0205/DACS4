@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import socket, threading
 from datetime import datetime
 from call_api import *
@@ -45,7 +45,6 @@ def log_request_info(response):
 @app.route('/')
 @app.route('/login')
 def login():
-    
     return render_template('auth/login.html')
 
 @app.route('/register')
@@ -65,17 +64,54 @@ def dashboard():
     
     return render_template('dashboard.html')
 
-@app.route('/tasks')
+@app.route('/tasks', methods=['GET', 'POST'])
 def tasks():
-    
-    return render_template('tasks.html')
-@app.route('/users')
+    if request.method == 'POST':
+        try:
+            user_id = 1
+            project_id = request.form.get('project_id')
+            title = request.form.get('title')
+            description = request.form.get('description')
+            status = request.form.get('Status')
+            begin_day = request.form.get('beginDay')
+            due_day = request.form.get('dueDay')
+            priority = request.form.get('priority')
+
+            data = {
+                "user_id": user_id,
+                "project_id": project_id,
+                "title": title,
+                "description": description,
+                "status": status,
+                "begin_day": begin_day,
+                "due_day": due_day,
+                "priority": priority
+            }
+            addTask(**data)
+
+            flash("Dữ liệu đã được xử lý thành công!", "success")
+            return redirect(url_for('tasks'))
+        except Exception as e:
+            # Xử lý lỗi, ghi log và thông báo cho người dùng
+            print(f"Đã xảy ra lỗi: {e}")
+            flash(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+
+    projects = getProjects()
+    tasks = getTasks()
+    return render_template('tasks.html', projects = projects, tasks = tasks)
+
+
+
+@app.route('/users', methods=['GET','POST'])
 def users():
+    if request.method == 'POST':
+        pio = request.form.get('priority')
+        print(pio)
     users= getUsers()
     return render_template('users.html', users=users)
 
 if __name__ == '__main__':
-        
+    app.secret_key = 'your_secret_key'  # Thay thế bằng chuỗi bí mật của bạn
 
     # app.run(debug=True)
     # Chay flask server trong thread rieng
