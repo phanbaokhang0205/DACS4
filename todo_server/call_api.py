@@ -1,44 +1,10 @@
 import requests
 
+BASE_URL = "http://127.0.0.1:5000"
 # =================================Call api =================================
-def getUsers():
-    base_url = 'http://127.0.0.1:5000/users'
-
-    try:
-        # Gửi yêu cầu GET đến API
-        response = requests.get(base_url)
-        
-        # Kiểm tra mã trạng thái
-        if response.status_code == 200:
-            # Chuyển đổi dữ liệu từ JSON thành Python dictionary
-            return response.json()  # Trả về danh sách người dùng
-        else:
-            print(f"Không thể lấy dữ liệu: {response.status_code}")
-            return []  # Trả về mảng rỗng nếu có lỗi
-
-    except requests.exceptions.RequestException as e:
-        print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
-    
+# ======================= TASK =================================
 def getTasks():
-    base_url = 'http://127.0.0.1:5000/tasks'
-
-    try:
-        # Gửi yêu cầu GET đến API
-        response = requests.get(base_url)
-        
-        if response.status_code == 200:
-            return response.json() 
-        else:
-            print(f"Không thể lấy dữ liệu: {response.status_code}")
-            return []
-
-    except requests.exceptions.RequestException as e:
-        print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
-    
-def getProjects():
-    base_url = 'http://127.0.0.1:5000/projects'
+    base_url = f'{BASE_URL}/tasks'
 
     try:
         # Gửi yêu cầu GET đến API
@@ -55,7 +21,7 @@ def getProjects():
         return []  # Trả về mảng rỗng nếu có lỗi
     
 def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority):
-    url = 'http://127.0.0.1:5000/tasks'
+    url = f'{BASE_URL}/tasks'
     payload = {
         "user_id": user_id,
         "project_id": project_id,
@@ -82,15 +48,8 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
         print(f"Error occurred: {e}")
         return None
 
-
-def addUser():
-    pass
-
-def checkUser():
-    pass
-
 def getTaskBySearching(keywords):
-    base_url = 'http://127.0.0.1:5000/tasks/search'
+    base_url = f'{BASE_URL}/tasks/search'
     params = {
         'title': keywords
     }
@@ -107,3 +66,59 @@ def getTaskBySearching(keywords):
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nế    u có lỗi
+    
+def delete_task(task_id):
+    try:
+        response = requests.delete(f'{BASE_URL}/tasks/{task_id}')
+        if response.status_code == 200:
+            return response.json()['message']
+        else:
+            return response.json()['error']
+    except Exception as e:
+        return f"An error occurred: {e}"
+    
+# ======================= PROJECT =================================
+def getProjects():
+    base_url = f'{BASE_URL}/projects'
+
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(base_url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
+
+# ======================= USER =================================
+def getUsers():
+    base_url = f'{BASE_URL}/users'
+
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(base_url)
+        
+        # Kiểm tra mã trạng thái
+        if response.status_code == 200:
+            # Chuyển đổi dữ liệu từ JSON thành Python dictionary
+            return response.json()  # Trả về danh sách người dùng
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []  # Trả về mảng rỗng nếu có lỗi
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
+def addUser():
+    pass
+
+def checkUser():
+    pass
+

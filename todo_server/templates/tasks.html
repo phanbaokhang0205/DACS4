@@ -22,7 +22,8 @@
                             <input name="search" type="text" class="form-control" placeholder="Search here">
                             <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;" type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
                         </form>
-                        <a class="btn-add" data-toggle="modal" data-target="#addproject"><i data-feather="plus"></i> Add Task</a>
+                        <a class="btn-del" data-toggle="modal" data-target="#delTask"><i data-feather="minus"></i> Delete Task</a>
+                        <a class="btn-add" data-toggle="modal" data-target="#addTask"><i data-feather="plus"></i> Add Task</a>
                     </div>
                 </div>
 
@@ -45,7 +46,7 @@
                                 </thead>
                                 <tbody>
                                     {% for t in tasks %}
-                                        <tr>
+                                        <tr data-id="{{ t.id }}" data-title="{{t.title}}" onclick="handleTaskClick(this)">
                                             <td>
                                                 <div class="table-img">
                                                     <a href="profile.html">
@@ -79,7 +80,7 @@
                                         </tr>
                                     {% else %}
                                        <tr>
-                                            <td>Không có dự án nào</td>
+                                            <td>No tasks available.</td>
                                        </tr>
                                     {% endfor %}
                                     <script>
@@ -100,6 +101,17 @@
                                                 selectElement.style.color = "white";  // Màu chữ trắng
                                             }
                                         }
+                                        function handleTaskClick(row) {
+                                            var taskId = row.getAttribute('data-id');
+                                            console.log(taskId);
+                                            // Tại đây, bạn có thể thực hiện các hành động khác với taskId này
+                                            // Lấy tên của task từ data-title
+                                            var taskTitle = row.getAttribute('data-title');
+
+                                            // Cập nhật nội dung của span với id="nameForDelete"
+                                            document.getElementById('nameForDelete').textContent = taskTitle;
+                                            document.getElementById('idForDelete').value = taskId;
+                                        }
                                     </script>                                    
                                 </tbody>
                             </table>
@@ -110,8 +122,8 @@
         </div>
     </div>
 
-    <div class="customize_popup">
-        <div class="modal fade" id="addproject" tabindex="-1" aria-labelledby="staticBackdropLabela"
+    <div class="customize_popup add_popup">
+        <div class="modal fade" id="addTask" tabindex="-1" aria-labelledby="staticBackdropLabela"
             aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered">
                 <form action="" method="post">
@@ -129,7 +141,7 @@
                                         {% for p in projects %}
                                             <option value="{{ p.id }}">{{ p.name }}</option>
                                         {% else %}
-                                            <option disabled>Không có dự án nào</option>
+                                            <option disabled>No projects available.</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -183,6 +195,37 @@
                             <div class="row mb-4">
                                 <div class="col-xl-3 col-sm-6 col-12 mx-auto">
                                     <button type="submit" class="btn btn-primary">Add</button>
+                                </div>
+                                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="customize_popup delete_popup">
+        <div class="modal fade" id="delTask" tabindex="-1" aria-labelledby="staticBackdropLabela"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <form action="{{url_for('handle_delete_task')}}" method="post">
+                    <input type="hidden" name="idForDelete" id="idForDelete">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="staticBackdropLabela">Delete Task</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p><b>"<span id="nameForDelete"></span>" will be permanently deleted.</b></p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row mb-4">
+                                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                    <button type="submit" class="btn btn-primary">Delete</button>
                                 </div>
                                 <div class="col-xl-3 col-sm-6 col-12 mx-auto">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

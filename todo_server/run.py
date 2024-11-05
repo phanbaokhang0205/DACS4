@@ -105,6 +105,17 @@ def tasks():
             tasks = getTasks()
     return render_template('tasks.html', projects=projects, tasks = tasks)
 
+@app.route('/delete_task', methods=['POST'])
+def handle_delete_task():
+    task_id = request.form.get('idForDelete')
+    print("Task id: "+task_id)
+    result = delete_task(task_id)
+    if 'successfully' in result:
+        flash(result, 'success')
+    else:
+        flash(result, 'error')
+    return redirect(url_for('tasks'))
+
 @app.route('/users', methods=['GET','POST'])
 def users():
     if request.method == 'POST':
