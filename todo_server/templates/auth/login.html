@@ -51,19 +51,26 @@
             </p>
         </div>
 
-        {% if error %}
-        <div class="alert alert-danger" role="alert">
-            {{ error }}
-        </div>
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
         {% endif %}
+        {% endwith %}
 
-        <form class=" " action="#" method="POST">
+
+        <form action="{{ url_for('login') }}" method="POST">
             <div class="form-floating mb-3 position-relative">
-                <input name="user_email" type="email" class="form-control custom-input " id="floatingInput"
+                <input name="user_username" type="text" class="form-control custom-input " id="floatingInput"
                     placeholder="name@example.com">
-                <label for="floatingInput">Email address</label>
+                <label for="floatingInput">Username</label>
                 <div class="email_icon position-absolute ">
-                    <img src="../../static/assets/icons/email.png" width="30px" height="30px" alt="email">
+                    <img src="../../static/assets/icons/user.png" width="30px" height="30px" alt="email">
                 </div>
             </div>
             <div class="form-floating mb-3 position-relative ">
@@ -92,6 +99,8 @@
             <div class="mb-4 d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary sign_in_btn w-100"><b>Sign in</b></button>
             </div>
+
+
         </form>
         <div class="continue_with mb-4 row g-3">
             <div class="col-4 text-white">

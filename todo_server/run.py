@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import socket, threading
 from datetime import datetime
 from call_api import *
 from server.index import App
-from datetime import datetime
+from datetime import datetime, timedelta
+
+# Check ng dùng đăng nhập
+from functools import wraps
+
 
 app = Flask(__name__)
 
@@ -43,10 +47,42 @@ def log_request_info(response):
 
 
 # ================================= Define route =================================
-@app.route('/')
-@app.route('/login')
+
+# Tạo 1 login_required coi người dùng có đăng nhập hay chưa
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Kiem tra co user_id trong session khong:
+        if 'user' not in session:
+            # flash("Vui lòng đăng nhập trước!", "warning")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form.get('user_username')
+        password = request.form.get('user_password')
+        
+        # Lấy danh sách người dùng
+        users = getUsers()
+        
+        # Kiểm tra từng người dùng để tìm user có username và password khớp
+        for user in users:
+            if user.get('username') == username and user.get('password') == password:
+                # Lưu thông tin vào session sau khi xác thực thành công
+                session['user'] = user
+                flash("Đăng nhập thành công!", "success")
+                return redirect(url_for('dashboard'))
+        
+        # Nếu không tìm thấy người dùng khớp, hiển thị thông báo lỗi
+        flash("Tên đăng nhập hoặc mật khẩu không đúng!", "danger")
+    
     return render_template('auth/login.html')
+
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -66,7 +102,7 @@ def register():
 
              # Kiểm tra nếu password và password_again khớp
             if password != password_again:
-                flash("Mật khẩu và xác nhận mật khẩu không khớp!", "error")
+                flash("Mật khẩu và xác nhận mật khẩu không khớp!", "danger")
                 return redirect(url_for('register'))
 
             data = {
@@ -83,30 +119,35 @@ def register():
             }
             addUser(**data)
 
-            flash("Dữ liệu đã được xử lý thành công!", "success")
+            flash("Đăng kí tài khoản thành công! Hãy đăng nhập nhé", "success")
             return redirect(url_for('dashboard'))
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
-            flash(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+            flash(f"Đã xảy ra lỗi trong quá trình xử lý!", "danger")
     
     return render_template('auth/register.html')
 
 
-
 @app.route('/logout')
 def logout():
-    pass
+    session.clear()
+    flash("Bạn đã đăng xuất!", "info")
+    return redirect(url_for('login'))
 
 @app.route('/project')
+@login_required
 def project():
     return render_template('project.html')
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
-    return render_template('dashboard.html')
+    user = session.get('user')
+    return render_template('dashboard.html', user = user)
 
 @app.route('/tasks', methods=['GET', 'POST'])
+@login_required
 def tasks():
     projects = getProjects()
 
@@ -138,7 +179,7 @@ def tasks():
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
-            flash(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+            print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
     else:
         title = request.args.get('search')
         if title:
@@ -147,18 +188,12 @@ def tasks():
             tasks = getTasks()
     return render_template('tasks.html', projects=projects, tasks = tasks)
 
-# @app.route('/users', methods=['GET','POST'])
-# def users():
-#     if request.method == 'POST':
-#         pio = request.form.get('priority')
-#         print(pio)
-#     users= getUsers()
-#     return render_template('users.html', users=users)
-
-
 
 if __name__ == '__main__':
-    app.secret_key = 'your_secret_key'  # Thay thế bằng chuỗi bí mật của bạn
+    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'   # Thay thế bằng chuỗi bí mật của bạn
+
+    # Thiết lập thời gian session
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
     # app.run(debug=True)
     # Chay flask server trong thread rieng
