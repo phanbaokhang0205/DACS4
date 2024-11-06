@@ -21,6 +21,16 @@ server_ip = get_server_ip()
 
 log_list=[]
 
+def format_date(date_string):
+    # Giả sử date_string có định dạng Thu, 28 Nov 2024 00:00:00 GMT
+    date_object = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %Z')
+    return date_object.strftime('%Y-%m-%d')
+
+@app.template_filter('format_date')
+def format_date(date_string):
+    date_object = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %Z')
+    return date_object.strftime('%Y-%m-%d')
+
 # Hàm log request vào log_list
 # Log request thông tin sau khi xử lý request
 @app.after_request
@@ -187,6 +197,53 @@ def tasks():
         else:
             tasks = getTasks()
     return render_template('tasks.html', projects=projects, tasks = tasks)
+
+
+@app.route('/delete_task', methods=['POST'])
+def handle_delete_task():
+    task_id = request.form.get('idForDelete')
+    print("Task id: "+task_id)
+    result = delete_task(task_id)
+    if 'successfully' in result:
+        flash(result, 'success')
+    else:
+        flash(result, 'error')
+    return redirect(url_for('tasks'))
+
+@app.route('/update_task', methods=['POST'])
+def handle_update_task():
+    task_id = request.form.get('idForUpdate')
+
+    title = request.form.get('title-update')
+    description = request.form.get('description-update')
+    status = request.form.get('Status-update')
+    begin_day = request.form.get('beginDay-update')
+    due_day = request.form.get('dueDay-update')
+    priority = request.form.get('priority-update')
+
+    data = {
+        "title": title,
+        "description": description,
+        "status": status,
+        "priority": priority,
+        "begin_day": begin_day,
+        "due_day": due_day
+    }
+    
+    result = update_task(task_id, data=data)
+    if 'successfully' in result:
+        flash(result, 'success')
+    else:
+        flash(result, 'error')
+    return redirect(url_for('tasks'))
+
+@app.route('/users', methods=['GET','POST'])
+def users():
+    if request.method == 'POST':
+        pio = request.form.get('priority')
+        print(pio)
+    users= getUsers()
+    return render_template('users.html', users=users)
 
 
 if __name__ == '__main__':

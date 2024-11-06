@@ -3,196 +3,364 @@
 {% block title %}Project Page{% endblock %}
 
 {% block content %}
-    <div class="page-wrapper">
-        <div class="content container-fluid">
-            <div class="row">
-                <div class="col-xl-12 col-sm-12 col-12">
-                    <div class="breadcrumb-path mb-4">
-                        <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}"><img src="../static/assets/img/dash.png"
-                                        class="mr-2" alt="breadcrumb" />Home</a>
-                            </li>
-                            <li class="breadcrumb-item active"> Task</li>
-                        </ul>
-                    </div>
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="row">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="breadcrumb-path mb-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}"><img
+                                    src="../static/assets/img/dash.png" class="mr-2" alt="breadcrumb" />Home</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Task</li>
+                    </ul>
                 </div>
-                <div class="col-xl-12 col-sm-12 col-12 mb-4">
-                    <div class="head-link-set">
-                        <form action="" method="get" style="display: flex;">
-                            <input name="search" type="text" class="form-control" placeholder="Search here">
-                            <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;" type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
-                        </form>
-                        <a class="btn-add" data-toggle="modal" data-target="#addproject"><i data-feather="plus"></i> Add Task</a>
-                    </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                <div class="head-link-set">
+                    <form action="" method="get" style="display: flex;">
+                        <input name="search" type="text" class="form-control" placeholder="Search here">
+                        <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;"
+                            type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
+                    </form>
+                    <a class="btn-update" data-toggle="modal" data-target="#updateTask"><i data-feather="divide"></i>
+                        Update Task</a>
+                    <a class="btn-del" data-toggle="modal" data-target="#delTask"><i data-feather="minus"></i> Delete
+                        Task</a>
+                    <a class="btn-add" data-toggle="modal" data-target="#addTask"><i data-feather="plus"></i> Add
+                        Task</a>
                 </div>
+            </div>
 
-                <div class="col-xl-12 col-sm-12 col-12 mb-4">
-                    <div class="card">
-                        <div class="table-heading">
-                            <h2>All Tasks</h2>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table  custom-table no-footer">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Summary</th>
-                                        <th>Remind me</th>
-                                        <th>Due date</th>
-                                        <th>Status</th>
-                                        <th>Priority</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for t in tasks %}
-                                        <tr>
-                                            <td>
-                                                <div class="table-img">
-                                                    <a href="profile.html">
-                                                        <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
-                                                            class="img-table" />
-                                                            <label class="action_label">{{t.title}}</label>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <label>{{t.description}}</label>
-                                            </td>
-                                            <td>
-                                                <label class="action_label2">21</label>
-                                            </td>
-                                            <td><label>{{t.due_day}}</label></td>
-                                            <td class="tab-select">
-                                                <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
-                                                    <option value="todo" {% if t.status == 'TODO' %}selected{% endif %}>Todo</option>
-                                                    <option value="doing" {% if t.status == 'IN_PROGRESS' %}selected{% endif %}>Doing</option>
-                                                    <option value="completed" {% if t.status == 'COMPLETED' %}selected{% endif %}>Done</option>
-                                                </select>
-                                            </td>
-                                            <td class="tab-select tab-2">
-                                                <select class="select" style="padding: 10px 20px; font-weight: bold;" onchange="changeColor(this)">
-                                                    <option value="low" {% if t.priority == 'LOW' %}selected{% endif %}>Low</option>
-                                                    <option value="medium" {% if t.priority == 'MEDIUM' %}selected{% endif %}>Medium</option>
-                                                    <option value="high" {% if t.priority == 'HIGH' %}selected{% endif %}>High</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    {% else %}
-                                       <tr>
-                                            <td>Không có dự án nào</td>
-                                       </tr>
-                                    {% endfor %}
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function() {
-                                            // Tìm tất cả các phần tử select và thiết lập màu ban đầu
-                                            var selects = document.querySelectorAll('.select');
-                                            selects.forEach(function(select) {
-                                                changeColor(select);  // Gọi hàm để thiết lập màu ban đầu dựa trên giá trị hiện tại
-                                            });
+            <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                <div class="card">
+                    <div class="table-heading">
+                        <h2>All Tasks</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table  custom-table no-footer">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Summary</th>
+                                    <th>Remind me</th>
+                                    <th>Due date</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in tasks %}
+                                <tr data-id="{{ t.id }}" data-project_id="{{t.project_id}}" data-title="{{t.title}}"
+                                    data-description="{{t.description}}" data-due_day="{{t.due_day}}"
+                                    data-status="{{t.status}}" data-begin_day="{{t.begin_day}}"
+                                    data-priority="{{t.priority}}" onclick="handleTaskClick(this)">
+                                    <td>
+                                        <div class="table-img">
+                                            <a href="profile.html">
+                                                <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
+                                                    class="img-table" />
+                                                <label class="action_label">{{t.title}}</label>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <label>{{t.description}}</label>
+                                    </td>
+                                    <td>
+                                        <label class="action_label2">21</label>
+                                    </td>
+                                    <td><label>{{t.due_day | format_date}}</label></td>
+                                    <td class="tab-select">
+                                        <select class="select" style="padding: 10px 20px; font-weight: bold;"
+                                            onchange="changeColor(this)">
+                                            <option value="todo" {% if t.status=='TODO' %}selected{% endif %}>Todo
+                                            </option>
+                                            <option value="doing" {% if t.status=='IN_PROGRESS' %}selected{% endif %}>
+                                                Doing</option>
+                                            <option value="completed" {% if t.status=='COMPLETED' %}selected{% endif %}>
+                                                Done</option>
+                                        </select>
+                                    </td>
+                                    <td class="tab-select tab-2">
+                                        <select class="select" style="padding: 10px 20px; font-weight: bold;"
+                                            onchange="changeColor(this)">
+                                            <option value="low" {% if t.priority=='LOW' %}selected{% endif %}>Low
+                                            </option>
+                                            <option value="medium" {% if t.priority=='MEDIUM' %}selected{% endif %}>
+                                                Medium</option>
+                                            <option value="high" {% if t.priority=='HIGH' %}selected{% endif %}>High
+                                            </option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>No tasks available.</td>
+                                </tr>
+                                {% endfor %}
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        // Tìm tất cả các phần tử select và thiết lập màu ban đầu
+                                        var selects = document.querySelectorAll('.select');
+                                        selects.forEach(function (select) {
+                                            changeColor(select);  // Gọi hàm để thiết lập màu ban đầu dựa trên giá trị hiện tại
                                         });
-                                    
-                                        function changeColor(selectElement) {
-                                            if (selectElement.value === "active") {
-                                                selectElement.style.backgroundColor = "#029cd5";  // Màu xanh dương cho Active
-                                                selectElement.style.color = "white";  // Màu chữ trắng
-                                            } else if (selectElement.value === "inactive") {
-                                                selectElement.style.backgroundColor = "#fe7a33";  // Màu đỏ cho Inactive
-                                                selectElement.style.color = "white";  // Màu chữ trắng
-                                            }
+                                    });
+
+                                    function changeColor(selectElement) {
+                                        if (selectElement.value === "active") {
+                                            selectElement.style.backgroundColor = "#029cd5";  // Màu xanh dương cho Active
+                                            selectElement.style.color = "white";  // Màu chữ trắng
+                                        } else if (selectElement.value === "inactive") {
+                                            selectElement.style.backgroundColor = "#fe7a33";  // Màu đỏ cho Inactive
+                                            selectElement.style.color = "white";  // Màu chữ trắng
                                         }
-                                    </script>                                    
-                                </tbody>
-                            </table>
-                        </div>
+                                    }
+                                    function convertToDate(dateString) {
+                                        const date = new Date(dateString); // Tạo đối tượng Date từ chuỗi
+                                        return date.toISOString().split('T')[0]; // Chuyển đổi thành YYYY-MM-DD
+                                    }
+
+                                    function handleTaskClick(row) {
+                                        var taskId = row.getAttribute('data-id');
+                                        var taskTitle = row.getAttribute('data-title');
+                                        var projectId = row.getAttribute('data-project_id');
+                                        var description = row.getAttribute('data-description');
+                                        var dueDay = convertToDate(row.getAttribute('data-due_day'));
+                                        var status = row.getAttribute('data-status');
+                                        var beginDay = convertToDate(row.getAttribute('data-begin_day'));
+                                        var priority = row.getAttribute('data-priority');
+
+
+
+                                        // Gán giá trị vào các input của form update
+                                        document.querySelector('input[name="title-update"]').value = taskTitle;
+                                        document.querySelector('select[name="project_id-update"]').value = projectId;
+                                        document.querySelector('textarea[name="description-update"]').value = description;
+                                        document.querySelector('input[name="dueDay-update"]').value = dueDay;
+                                        document.querySelector('input[name="beginDay-update"]').value = beginDay;
+                                        document.querySelector('select[name="Status-update"]').value = status;
+                                        document.querySelector('select[name="priority-update"]').value = priority;
+
+                                        // Nếu có input ẩn để lưu task ID, gán giá trị vào đó
+                                        document.getElementById('idForDelete').value = taskId;
+                                        document.getElementById('idForUpdate').value = taskId;
+                                        document.getElementById('nameForDelete').innerText = taskTitle;
+                                    }
+                                </script>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="customize_popup">
-        <div class="modal fade" id="addproject" tabindex="-1" aria-labelledby="staticBackdropLabela"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <form method="post">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabela">Create New Task</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class=" col-md-12 p-0 mb-4">
-                                <div class=" form-popup m-0">
-                                    <select name="project_id" id="">
-                                        {% for p in projects %}
-                                            <option value="{{ p.id }}">{{ p.name }}</option>
-                                        {% else %}
-                                            <option disabled>Không có dự án nào</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class=" col-md-12 p-0">
-                                <div class=" form-popup m-0">
-                                    <input name="title" type="text" placeholder="Task Name">
-                                </div>
-                            </div>
-                            <div class=" col-md-12 p-0">
-                                <div class=" form-popup m-0">
-                                    <textarea name="description" style="margin-top: 20px; width: 100%; padding: 10px; border: 0.1px solid rgb(181, 181, 181); font-size: 15px; box-sizing: border-box;" placeholder="Description" rows="4" cols="50"></textarea>
-                                </div>
+<div class="customize_popup add_popup">
+    <div class="modal fade" id="addTask" tabindex="-1" aria-labelledby="staticBackdropLabela" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form action="" method="post">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabela">Create New Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class=" col-md-12 p-0 mb-4">
+                            <div class=" form-popup m-0">
+                                <select name="project_id" id="">
+                                    {% for p in projects %}
+                                    <option value="{{ p.id }}">{{ p.name }}</option>
+                                    {% else %}
+                                    <option disabled>No projects available.</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <input name="title" type="text" placeholder="Task Name">
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <textarea name="description"
+                                    style="margin-top: 20px; width: 100%; padding: 10px; border: 0.1px solid rgb(181, 181, 181); font-size: 15px; box-sizing: border-box;"
+                                    placeholder="Description" rows="4" cols="50"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Due Date</b></label>
+                                <input name="dueDay" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Status</b></label>
+                                <select name="Status">
+                                    <option value="TODO">Todo</option>
+                                    <option value="IN_PROGRESS">Doing</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Begin day</b></label>
+                                <input name="beginDay" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Priority</b></label>
+                                <select name="priority">
+                                    <option value="LOW">Low</option>
+                                    <option value="MEDIUM">Medium</option>
+                                    <option value="HIGH">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
                         <div class="row mb-4">
                             <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <div class=" form-popup m-0">
-                                    <label><b>Due Date</b></label>
-                                    <input name="dueDay" type="date" style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
-                                </div>
+                                <button type="submit" class="btn btn-primary">Add</button>
                             </div>
                             <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <div class=" form-popup m-0">
-                                    <label><b>Status</b></label>
-                                    <select name="Status">
-                                        <option value="TODO">Todo</option>
-                                        <option value="IN_PROGRESS">Doing</option>
-                                        <option value="COMPLETED">Completed</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <div class=" form-popup m-0">
-                                    <label><b>Begin day</b></label>
-                                    <input name="beginDay" type="date" style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <div class=" form-popup m-0">
-                                    <label><b>Priority</b></label>
-                                    <select name="priority">
-                                        <option value="LOW">Low</option>
-                                        <option value="MEDIUM">Medium</option>
-                                        <option value="HIGH">High</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="row mb-4">
-                                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                    <button type="submit" class="btn btn-primary">Add</button>
-                                </div>
-                                <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                </div>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             </div>
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+<div class="customize_popup delete_popup">
+    <div class="modal fade" id="delTask" tabindex="-1" aria-labelledby="staticBackdropLabela" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form action="{{url_for('handle_delete_task')}}" method="post">
+                <input type="hidden" name="idForDelete" id="idForDelete">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabela">Delete Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><b>"<span id="nameForDelete"></span>" will be permanently deleted.</b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="submit" class="btn btn-primary">Delete</button>
+                            </div>
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="customize_popup update_popup">
+    <div class="modal fade" id="updateTask" tabindex="-1" aria-labelledby="staticBackdropLabela" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form action="{{url_for('handle_update_task')}}" method="post">
+                <input type="hidden" name="idForUpdate" id="idForUpdate">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabela">Update Task</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class=" col-md-12 p-0 mb-4">
+                            <div class=" form-popup m-0">
+                                <select name="project_id-update" id="">
+                                    {% for p in projects %}
+                                    <option value="{{ p.id }}">{{ p.name }}</option>
+                                    {% else %}
+                                    <option disabled>No projects available.</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <input name="title-update" type="text" placeholder="Task Name">
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <textarea name="description-update"
+                                    style="margin-top: 20px; width: 100%; padding: 10px; border: 0.1px solid rgb(181, 181, 181); font-size: 15px; box-sizing: border-box;"
+                                    placeholder="Description" rows="4" cols="50"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Due Date</b></label>
+                                <input name="dueDay-update" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Status</b></label>
+                                <select name="Status-update">
+                                    <option value="TODO">Todo</option>
+                                    <option value="IN_PROGRESS">Doing</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Begin day</b></label>
+                                <input name="beginDay-update" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Priority</b></label>
+                                <select name="priority-update">
+                                    <option value="LOW">Low</option>
+                                    <option value="MEDIUM">Medium</option>
+                                    <option value="HIGH">High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row mb-4">
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
-
