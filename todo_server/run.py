@@ -148,7 +148,8 @@ def logout():
 @app.route('/project')
 @login_required
 def project():
-    return render_template('project.html')
+    user = session.get('user')
+    return render_template('project.html', user=user)
 
 @app.route('/dashboard')
 @login_required
@@ -159,8 +160,8 @@ def dashboard():
 @app.route('/tasks', methods=['GET', 'POST'])
 @login_required
 def tasks():
+    user = session.get('user')
     projects = getProjects()
-
     if request.method == 'POST':
         try:    
             user_id = 1
@@ -196,7 +197,7 @@ def tasks():
             tasks = getTaskBySearching(title)
         else:
             tasks = getTasks()
-    return render_template('tasks.html', projects=projects, tasks = tasks)
+    return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
 
 
 @app.route('/delete_task', methods=['POST'])
