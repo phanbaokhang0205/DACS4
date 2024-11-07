@@ -141,7 +141,7 @@ def register():
 
 @app.route('/logout')
 def logout():
-    session.clear()
+    session.pop("user")
     flash("Bạn đã đăng xuất!", "info")
     return redirect(url_for('login'))
 
