@@ -217,20 +217,26 @@ class Requests_Frame(ctk.CTkFrame):
                 status = parts[3]
                 server_ip = parts[4]
                 client_ip = parts[5]
-                
+                content = f"[{times}]\n\nMethod: {method}\nPath: {path}\nServer IP: {server_ip}\nClient IP: {client_ip}\nStatus: {status}"
                 color = "#79FDA5" if method == "GET" else "#79E2FD" if method == "POST" else "#FD797B" if method == "DELETE" else "#FDEF79"
                 request_item = self.request_item(
                     master=self.log_display,
                     method=method,
-                    content=f" [{times}]\n\nMethod: {method}\nPath: {path}\nServer IP: {server_ip}\nClient IP: {client_ip}\nStatus: {status}",
+                    content=content,
                     color=color
                 )
-                request_item.pack(fill='x', padx=10, pady=10)
-        
+                if self.filterRequest(path):
+                    request_item.pack(fill='x', padx=10, pady=10)
+
         # Tự động cuộn xuống cuối
         self.log_display.update_idletasks()
         self.log_display._parent_canvas.yview_moveto(1.0)
 
+    def filterRequest(self, content):
+        if ("/static/assets" in content):
+            return False
+        else:
+            return True
 
     # Hàm tìm kiếm log dựa trên từ khóa
     def search_logs(self,  log_list=None):

@@ -6,7 +6,7 @@ from server.index import App
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
-from functools import wraps
+# from functools import wraps
 
 
 app = Flask(__name__)
@@ -59,15 +59,15 @@ def log_request_info(response):
 # ================================= Define route =================================
 
 # Tạo 1 login_required coi người dùng có đăng nhập hay chưa
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        # Kiem tra co user_id trong session khong:
-        if 'user' not in session:
-            # flash("Vui lòng đăng nhập trước!", "warning")
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+# def login_required(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         # Kiem tra co user_id trong session khong:
+#         if 'user' not in session:
+#             # flash("Vui lòng đăng nhập trước!", "warning")
+#             return redirect(url_for('login'))
+#         return f(*args, **kwargs)
+#     return decorated_function
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -84,7 +84,7 @@ def login():
             if user.get('username') == username and user.get('password') == password:
                 # Lưu thông tin vào session sau khi xác thực thành công
                 session['user'] = user
-                flash("Đăng nhập thành công!", "success")
+                # flash("Đăng nhập thành công!", "success")
                 return redirect(url_for('dashboard'))
         
         # Nếu không tìm thấy người dùng khớp, hiển thị thông báo lỗi
@@ -134,124 +134,133 @@ def register():
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
-            flash(f"Đã xảy ra lỗi trong quá trình xử lý!", "danger")
+            print(f"Đã xảy ra lỗi trong quá trình xử lý!", "danger")
     
     return render_template('auth/register.html')
 
 
 @app.route('/logout')
 def logout():
-    session.pop("user")
-    flash("Bạn đã đăng xuất!", "info")
+    session.pop('user', None)
+    # flash("Bạn đã đăng xuất!", "info")
     return redirect(url_for('login'))
 
 @app.route('/project')
-@login_required
+# @login_required
 def project():
-    user = session.get('user')
-    return render_template('project.html', user=user)
+    if 'user' in session:
+        user = session['user']
+        return render_template('project.html', user=user)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/dashboard')
-@login_required
+# @login_required
 def dashboard():
-    user = session.get('user')
-    return render_template('dashboard.html', user = user)
+    if 'user' in session:
+        user = session['user']
+        return render_template('dashboard.html', user = user)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/tasks', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def tasks():
-    user = session.get('user')
-    projects = getProjects()
-    if request.method == 'POST':
-        try:    
-            user_id = 1
-            project_id = request.form.get('project_id')
-            title = request.form.get('title')
-            description = request.form.get('description')
-            status = request.form.get('Status')
-            begin_day = request.form.get('beginDay')
-            due_day = request.form.get('dueDay')
-            priority = request.form.get('priority')
+    if 'user' in session:
+        user = session['user']
+        projects = getProjects()
+        if request.method == 'POST':
+            try:    
+                user_id = 1
+                project_id = request.form.get('project_id')
+                title = request.form.get('title')
+                description = request.form.get('description')
+                status = request.form.get('Status')
+                begin_day = request.form.get('beginDay')
+                due_day = request.form.get('dueDay')
+                priority = request.form.get('priority')
 
-            data = {
-                "user_id": user_id,
-                "project_id": project_id,
-                "title": title,
-                "description": description,
-                "status": status,
-                "begin_day": begin_day,
-                "due_day": due_day,
-                "priority": priority
-            }
-            addTask(**data)
+                data = {
+                    "user_id": user_id,
+                    "project_id": project_id,
+                    "title": title,
+                    "description": description,
+                    "status": status,
+                    "begin_day": begin_day,
+                    "due_day": due_day,
+                    "priority": priority
+                }
+                addTask(**data)
 
-            flash("Dữ liệu đã được xử lý thành công!", "success")
-            return redirect(url_for('tasks'))
-        except Exception as e:
-            # Xử lý lỗi, ghi log và thông báo cho người dùng
-            print(f"Đã xảy ra lỗi: {e}")
-            print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
-    else:
-        title = request.args.get('search')
-        if title:
-            tasks = getTaskBySearching(title)
+                print("Dữ liệu đã được xử lý thành công!", "success")
+                return redirect(url_for('tasks'))
+            except Exception as e:
+                # Xử lý lỗi, ghi log và thông báo cho người dùng
+                print(f"Đã xảy ra lỗi: {e}")
+                print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
         else:
-            tasks = getTasks()
-    return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
+            title = request.args.get('search')
+            if title:
+                tasks = getTaskBySearching(title)
+            else:
+                tasks = getTasks()
+        return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/delete_task', methods=['POST'])
 def handle_delete_task():
-    task_id = request.form.get('idForDelete')
-    print("Task id: "+task_id)
-    result = delete_task(task_id)
-    if 'successfully' in result:
-        flash(result, 'success')
+    if 'user' in session:
+        user = session['user']
+        task_id = request.form.get('idForDelete')
+        print("Task id: "+task_id)
+        result = delete_task(task_id)
+        if 'successfully' in result:
+            print(result, 'success')
+        else:
+            print(result, 'error')
+        return redirect(url_for('tasks', user=user))
     else:
-        flash(result, 'error')
-    return redirect(url_for('tasks'))
+        return redirect(url_for('login'))
 
 @app.route('/update_task', methods=['POST'])
 def handle_update_task():
-    task_id = request.form.get('idForUpdate')
+    if 'user' in session:
+        user = session['user']
+        task_id = request.form.get('idForUpdate')
 
-    title = request.form.get('title-update')
-    description = request.form.get('description-update')
-    status = request.form.get('Status-update')
-    begin_day = request.form.get('beginDay-update')
-    due_day = request.form.get('dueDay-update')
-    priority = request.form.get('priority-update')
+        title = request.form.get('title-update')
+        description = request.form.get('description-update')
+        status = request.form.get('Status-update')
+        begin_day = request.form.get('beginDay-update')
+        due_day = request.form.get('dueDay-update')
+        priority = request.form.get('priority-update')
 
-    data = {
-        "title": title,
-        "description": description,
-        "status": status,
-        "priority": priority,
-        "begin_day": begin_day,
-        "due_day": due_day
-    }
-    
-    result = update_task(task_id, data=data)
-    if 'successfully' in result:
-        flash(result, 'success')
+        data = {
+            "title": title,
+            "description": description,
+            "status": status,
+            "priority": priority,
+            "begin_day": begin_day,
+            "due_day": due_day
+        }
+        
+        result = update_task(task_id, data=data)
+        if 'successfully' in result:
+            print(result, 'success')
+        else:
+            print(result, 'error')
+        return redirect(url_for('tasks', user=user))
     else:
-        flash(result, 'error')
-    return redirect(url_for('tasks'))
-
-@app.route('/users', methods=['GET','POST'])
-def users():
-    if request.method == 'POST':
-        pio = request.form.get('priority')
-        print(pio)
-    users= getUsers()
-    return render_template('users.html', users=users)
+        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
     app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'   # Thay thế bằng chuỗi bí mật của bạn
 
     # Thiết lập thời gian session
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
     # app.run(debug=True)
     # Chay flask server trong thread rieng

@@ -288,11 +288,12 @@
 
 <!-- Xác nhận đăng xuất -->
 <script>
-    function confirmLogout(event) {
-        event.preventDefault();  // Ngăn việc chuyển trang ngay lập tức
-        const confirmed = confirm("Bạn có chắc chắn muốn đăng xuất không?");
-        if (confirmed) {
-            window.location.href = event.target.href;  // Chuyển hướng nếu người dùng xác nhận
-        }
-    }
+	function confirmLogout(event) {
+		if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+			return true;  // Cho phép điều hướng đến URL đăng xuất
+		} else {
+			event.preventDefault();  // Ngăn chặn điều hướng nếu người dùng chọn "Hủy"
+			return false;
+		}
+	}
 </script>
