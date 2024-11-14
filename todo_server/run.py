@@ -145,15 +145,6 @@ def logout():
     # flash("Bạn đã đăng xuất!", "info")
     return redirect(url_for('login'))
 
-@app.route('/project')
-# @login_required
-def project():
-    if 'user' in session:
-        user = session['user']
-        return render_template('project.html', user=user)
-    else:
-        return redirect(url_for('login'))
-
 @app.route('/dashboard')
 # @login_required
 def dashboard():
@@ -162,6 +153,8 @@ def dashboard():
         return render_template('dashboard.html', user = user)
     else:
         return redirect(url_for('login'))
+    
+#==========================TASK===============================
 
 @app.route('/tasks', methods=['GET', 'POST'])
 # @login_required
@@ -254,6 +247,89 @@ def handle_update_task():
         return redirect(url_for('tasks', user=user))
     else:
         return redirect(url_for('login'))
+    
+#===========================PROJECT================================
+@app.route('/projects', methods=['GET', 'POST'])
+# @login_required
+def projects():
+    if 'user' in session:
+        user = session['user']
+        if request.method == 'POST':
+            try:    
+                user_id = 1
+                name = request.form.get('name')
+                description = request.form.get('description')
+                created_at = request.form.get('created_at')
+                updated_at = request.form.get('updated_at')
+
+                data = {
+                    "user_id": user_id,
+                    "name": name,
+                    "description": description,
+                    "created_at": created_at,
+                    "updated_at": updated_at
+                }
+                addProject(**data)
+
+                print("Dữ liệu đã được xử lý thành công!", "success")
+                return redirect(url_for('projects'))
+            except Exception as e:
+                # Xử lý lỗi, ghi log và thông báo cho người dùng
+                print(f"Đã xảy ra lỗi: {e}")
+                print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+        else:
+            name = request.args.get('search')
+            if name:
+                projects = getProjectBySearching(name)
+            else:
+                projects = getProjects()
+        return render_template('project.html', projects=projects, user = user)
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/delete_project', methods=['POST'])
+def handle_delete_project():
+    if 'user' in session:
+        user = session['user']
+        project_id = request.form.get('idForDelete')
+        print("Project id: "+project_id)
+        result = delete_project(project_id)
+        if 'successfully' in result:
+            print(result, 'success')
+        else:
+            print(result, 'error')
+        return redirect(url_for('projects', user=user))
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/update_project', methods=['POST'])
+def handle_update_project():
+    if 'user' in session:
+        user = session['user']
+        project_id = request.form.get('idForUpdate')
+
+        name = request.form.get('name-update')
+        description = request.form.get('description-update')
+        created_at = request.form.get('created_at-update')
+        updated_at = request.form.get('updated_at-update')
+
+        data = {
+            "name": name,
+            "description": description,
+            "created_at": created_at,
+            "updated_at": updated_at,
+        }
+        
+        result = update_project(project_id, data=data)
+        if 'successfully' in result:
+            print(result, 'success')
+        else:
+            print(result, 'error')
+        return redirect(url_for('projects', user=user))
+    else:
+        return redirect(url_for('login'))
+    
+#=================================MAIN================================
 
 
 if __name__ == '__main__':

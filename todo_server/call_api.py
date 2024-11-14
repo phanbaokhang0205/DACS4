@@ -64,7 +64,7 @@ def getTaskBySearching(keywords):
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nế    u có lỗi
+        return []  # Trả về mảng rỗng nếu có lỗi
     
 def delete_task(task_id):
     try:
@@ -103,6 +103,71 @@ def getProjects():
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
+    
+
+def addProject(user_id, name, description, created_at, updated_at):
+    url = f'{BASE_URL}/projects'
+    payload = {
+        "user_id": user_id,
+        "name": name,
+        "description": description,
+        "created_at": created_at,
+        "updated_at": updated_at
+    }
+
+    try:
+        # Gửi yêu cầu POST
+        response = requests.post(url, json=payload)
+        
+        if response.status_code == 201:
+            print("Project added successfully.")
+            return response.json()
+        else:
+            print(f"Failed to add project: {response.status_code}")
+            return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+        return None
+    
+def getProjectBySearching(keywords):
+    base_url = f'{BASE_URL}/projects/search'
+    params = {
+        'name': keywords
+    }
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(base_url, params=params)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
+def delete_project(project_id):
+    try:
+        response = requests.delete(f'{BASE_URL}/projects/{project_id}')
+        if response.status_code == 200:
+            return response.json()['message']
+        else:
+            return response.json()['error']
+    except Exception as e:
+        return f"An error occurred: {e}"
+    
+def update_project(project_id, data):
+    try:
+        response = requests.put(f'{BASE_URL}/projects/{project_id}', json=data)
+        if response.status_code == 200:
+            return response.json()['message']
+        else:
+            return response.json()['error']
+    except Exception as e:
+        return f"An error occurred: {e}"
     
 
 # ======================= USER =================================

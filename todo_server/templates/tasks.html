@@ -19,7 +19,7 @@
             <div class="col-xl-12 col-sm-12 col-12 mb-4">
                 <div class="head-link-set">
                     <form action="" method="get" style="display: flex;">
-                        <input name="search" type="text" class="form-control" placeholder="Search here">
+                        <input name="search" type="text" class="form-control" placeholder="Search task here">
                         <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;"
                             type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
                     </form>
@@ -83,7 +83,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <a class="edit_employee" data-toggle="modal" data-target="#updateTask" 
+                                        <a data-toggle="modal" data-target="#updateTask" 
                                             data-id="{{ t.id }}" data-title="{{ t.title }}" data-project_id="{{ t.project_id }}"
                                             data-description="{{ t.description }}" data-due="{{ t.due_day }}" 
                                             data-status="{{ t.status }}" data-priority="{{ t.priority }}" 
