@@ -23,10 +23,6 @@
                         <button class="btn" style="background-color: rgb(2, 105, 179); margin-left: 20px;"
                             type="submit"><i class="fas fa-search" style="color: antiquewhite;"></i></button>
                     </form>
-                    <a class="btn-update" data-toggle="modal" data-target="#updateTask"><i data-feather="divide"></i>
-                        Update Task</a>
-                    <a class="btn-del" data-toggle="modal" data-target="#delTask"><i data-feather="minus"></i> Delete
-                        Task</a>
                     <a class="btn-add" data-toggle="modal" data-target="#addTask"><i data-feather="plus"></i> Add
                         Task</a>
                 </div>
@@ -42,33 +38,26 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Summary</th>
-                                    <th>Remind me</th>
+                                    <th>Description</th>
                                     <th>Due date</th>
                                     <th>Status</th>
                                     <th>Priority</th>
+                                    <th>Update</th>
+                                    <th>Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for t in tasks %}
-                                <tr data-id="{{ t.id }}" data-project_id="{{t.project_id}}" data-title="{{t.title}}"
-                                    data-description="{{t.description}}" data-due_day="{{t.due_day}}"
-                                    data-status="{{t.status}}" data-begin_day="{{t.begin_day}}"
-                                    data-priority="{{t.priority}}" onclick="handleTaskClick(this)">
-                                    <td>
-                                        <div class="table-img">
-                                            <a href="profile.html">
-                                                <img src="../static/assets/img/profiles/avatar-13.jpg" alt="profile"
-                                                    class="img-table" />
-                                                <label class="action_label">{{t.title}}</label>
-                                            </a>
-                                        </div>
+                                <tr>
+                                    <td data-toggle="modal" data-target="#detailsTask" 
+                                    data-id="{{ t.id }}" data-title="{{ t.title }}" data-project_id="{{ t.project_id }}"
+                                    data-description="{{ t.description }}" data-due="{{ t.due_day }}" 
+                                    data-status="{{ t.status }}" data-priority="{{ t.priority }}" 
+                                    data-begin="{{ t.begin_day }}" onclick="handleDetailClick(this)">
+                                        <label class="action_label">{{t.title}}</label>
                                     </td>
                                     <td>
                                         <label>{{t.description}}</label>
-                                    </td>
-                                    <td>
-                                        <label class="action_label2">21</label>
                                     </td>
                                     <td><label>{{t.due_day | format_date}}</label></td>
                                     <td class="tab-select">
@@ -93,6 +82,23 @@
                                             </option>
                                         </select>
                                     </td>
+                                    <td>
+                                        <a class="edit_employee" data-toggle="modal" data-target="#updateTask" 
+                                            data-id="{{ t.id }}" data-title="{{ t.title }}" data-project_id="{{ t.project_id }}"
+                                            data-description="{{ t.description }}" data-due="{{ t.due_day }}" 
+                                            data-status="{{ t.status }}" data-priority="{{ t.priority }}" 
+                                            data-begin="{{ t.begin_day }}" onclick="handleTaskClick(this)">
+                                            <i data-feather="edit"></i>
+                                        </a>
+                                    </td>
+                                    
+                                    <td>
+                                        <!-- Nút xóa task -->
+                                        <a href="#" class="delete_button" data-id="{{ t.id }}" data-toggle="modal" data-target="#delTask" onclick="handleDeleteClick(this)">
+                                            <i data-feather="trash-2"></i>
+                                        </a>
+                                    </td>
+                                    
                                 </tr>
                                 {% else %}
                                 <tr>
@@ -117,24 +123,27 @@
                                             selectElement.style.color = "white";  // Màu chữ trắng
                                         }
                                     }
+
                                     function convertToDate(dateString) {
-                                        const date = new Date(dateString); // Tạo đối tượng Date từ chuỗi
-                                        return date.toISOString().split('T')[0]; // Chuyển đổi thành YYYY-MM-DD
+                                        var date = new Date(dateString);
+                                        if (isNaN(date.getTime())) {
+                                            console.error("Invalid date format:", dateString);  // In ra nếu ngày không hợp lệ
+                                            return "";  // Trả về chuỗi trống nếu ngày không hợp lệ
+                                        }
+                                        return date.toISOString().split('T')[0];  // Trả về định dạng YYYY-MM-DD
                                     }
 
-                                    function handleTaskClick(row) {
-                                        var taskId = row.getAttribute('data-id');
-                                        var taskTitle = row.getAttribute('data-title');
-                                        var projectId = row.getAttribute('data-project_id');
-                                        var description = row.getAttribute('data-description');
-                                        var dueDay = convertToDate(row.getAttribute('data-due_day'));
-                                        var status = row.getAttribute('data-status');
-                                        var beginDay = convertToDate(row.getAttribute('data-begin_day'));
-                                        var priority = row.getAttribute('data-priority');
+                                    function handleTaskClick(button) {
+                                        var taskId = button.getAttribute('data-id');
+                                        var taskTitle = button.getAttribute('data-title');
+                                        var projectId = button.getAttribute('data-project_id');
+                                        var description = button.getAttribute('data-description');
+                                        var dueDay = convertToDate(button.getAttribute('data-due'));
+                                        var status = button.getAttribute('data-status');
+                                        var beginDay = convertToDate(button.getAttribute('data-begin'));
+                                        var priority = button.getAttribute('data-priority');
 
-
-
-                                        // Gán giá trị vào các input của form update
+                                        // Cập nhật giá trị vào các input trong form cập nhật
                                         document.querySelector('input[name="title-update"]').value = taskTitle;
                                         document.querySelector('select[name="project_id-update"]').value = projectId;
                                         document.querySelector('textarea[name="description-update"]').value = description;
@@ -143,10 +152,39 @@
                                         document.querySelector('select[name="Status-update"]').value = status;
                                         document.querySelector('select[name="priority-update"]').value = priority;
 
-                                        // Nếu có input ẩn để lưu task ID, gán giá trị vào đó
-                                        document.getElementById('idForDelete').value = taskId;
+                                        // Cập nhật taskId vào các input ẩn để thực hiện cập nhật hoặc xóa
                                         document.getElementById('idForUpdate').value = taskId;
-                                        document.getElementById('nameForDelete').innerText = taskTitle;
+                                    }
+                                    
+
+                                    function handleDeleteClick(button) {
+                                        // Lấy ID của task cần xóa từ thuộc tính `data-id`
+                                        var taskId = button.getAttribute('data-id');
+                                        var taskTitle = button.closest('tr').querySelector('td').innerText; // Lấy tên task từ hàng
+
+                                        // Cập nhật ID vào form xóa và tên task vào thông báo xác nhận
+                                        document.getElementById('idForDelete').value = taskId;
+                                        document.getElementById('nameForDelete').innerText = taskTitle; // Hiển thị tên task trong modal xác nhận
+                                    }
+
+                                    function handleDetailClick(button) {
+                                        var taskId = button.getAttribute('data-id');
+                                        var taskTitle = button.getAttribute('data-title');
+                                        var projectId = button.getAttribute('data-project_id');
+                                        var description = button.getAttribute('data-description');
+                                        var dueDay = convertToDate(button.getAttribute('data-due'));
+                                        var status = button.getAttribute('data-status');
+                                        var beginDay = convertToDate(button.getAttribute('data-begin'));
+                                        var priority = button.getAttribute('data-priority');
+
+                                        // Cập nhật giá trị vào các input trong form cập nhật
+                                        document.querySelector('input[name="title-detail"]').value = taskTitle;
+                                        document.querySelector('select[name="project_id-detail"]').value = projectId;
+                                        document.querySelector('textarea[name="description-detail"]').value = description;
+                                        document.querySelector('input[name="dueDay-detail"]').value = dueDay;
+                                        document.querySelector('input[name="beginDay-detail"]').value = beginDay;
+                                        document.querySelector('select[name="Status-detail"]').value = status;
+                                        document.querySelector('select[name="priority-detail"]').value = priority;
                                     }
                                 </script>
                             </tbody>
@@ -246,32 +284,28 @@
     </div>
 </div>
 <div class="customize_popup delete_popup">
-    <div class="modal fade" id="delTask" tabindex="-1" aria-labelledby="staticBackdropLabela" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <form action="{{url_for('handle_delete_task')}}" method="post">
-                <input type="hidden" name="idForDelete" id="idForDelete">
+    <div class="customize_popup delete_popup">
+        <div class="modal fade" id="delTask" tabindex="-1" aria-labelledby="delTaskLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabela">Delete Task</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p><b>"<span id="nameForDelete"></span>" will be permanently deleted.</b></p>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="row mb-4">
-                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <button type="submit" class="btn btn-primary">Delete</button>
-                            </div>
-                            <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            </div>
+                    <form action="{{url_for('handle_delete_task')}}" method="POST">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="delTaskLabel">Delete Task</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                    </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the task <strong id="nameForDelete"></strong>?</p>
+                            <input type="hidden" id="idForDelete" name="idForDelete">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -351,10 +385,86 @@
                     <div class="modal-footer">
                         <div class="row mb-4">
                             <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                                <button type="submit" class="btn btn-primary">Add</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                             </div>
                             <div class="col-xl-3 col-sm-6 col-12 mx-auto">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="customize_popup details_popup">
+    <div class="modal fade" id="detailsTask" tabindex="-1" aria-labelledby="staticBackdropLabela" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabela">Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class=" col-md-12 p-0 mb-4">
+                            <div class=" form-popup m-0">
+                                <select name="project_id-detail" id="">
+                                    {% for p in projects %}
+                                    <option value="{{ p.id }}">{{ p.name }}</option>
+                                    {% else %}
+                                    <option disabled>No projects available.</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <input name="title-detail" type="text" placeholder="Task Name">
+                            </div>
+                        </div>
+                        <div class=" col-md-12 p-0">
+                            <div class=" form-popup m-0">
+                                <textarea name="description-detail"
+                                    style="margin-top: 20px; width: 100%; padding: 10px; border: 0.1px solid rgb(181, 181, 181); font-size: 15px; box-sizing: border-box;"
+                                    placeholder="Description" rows="4" cols="50"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Due Date</b></label>
+                                <input name="dueDay-detail" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Status</b></label>
+                                <select name="Status-detail">
+                                    <option value="TODO">Todo</option>
+                                    <option value="IN_PROGRESS">Doing</option>
+                                    <option value="COMPLETED">Completed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Begin day</b></label>
+                                <input name="beginDay-detail" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
+                                <label><b>Priority</b></label>
+                                <select name="priority-detail">
+                                    <option value="LOW">Low</option>
+                                    <option value="MEDIUM">Medium</option>
+                                    <option value="HIGH">High</option>
+                                </select>
                             </div>
                         </div>
                     </div>
