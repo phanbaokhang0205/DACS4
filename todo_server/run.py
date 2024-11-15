@@ -84,6 +84,7 @@ def login():
             if user.get('username') == username and user.get('password') == password:
                 # Lưu thông tin vào session sau khi xác thực thành công
                 session['user'] = user
+                # session['user_id'] = user.get('id')
                 # flash("Đăng nhập thành công!", "success")
                 return redirect(url_for('dashboard'))
         
@@ -150,7 +151,19 @@ def logout():
 def dashboard():
     if 'user' in session:
         user = session['user']
-        return render_template('dashboard.html', user = user)
+        user_id = user.get('id')
+        tasks = getTaskByUserId(user_id)
+        project_count = len(getProjectByUserId(user_id))
+        task_count = len(getTaskByUserId(user_id))
+        done_count = sum(1 for task in tasks if task['status'] == 'DONE')
+        doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
+        todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
+
+        return render_template('dashboard.html',
+            user = user, project_count = project_count, 
+            task_count = task_count, done_count = done_count, 
+            doing_count = doing_count, todo_count = todo_count
+        )
     else:
         return redirect(url_for('login'))
     
@@ -161,10 +174,11 @@ def dashboard():
 def tasks():
     if 'user' in session:
         user = session['user']
-        projects = getProjects()
+        user_id = user.get('id')
+        projects = getProjectByUserId(user_id)
         if request.method == 'POST':
             try:    
-                user_id = 1
+                user_id = user_id
                 project_id = request.form.get('project_id')
                 title = request.form.get('title')
                 description = request.form.get('description')
@@ -196,7 +210,7 @@ def tasks():
             if title:
                 tasks = getTaskBySearching(title)
             else:
-                tasks = getTasks()
+                tasks = getTaskByUserId(user_id)
         return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
     else:
         return redirect(url_for('login'))
@@ -254,9 +268,10 @@ def handle_update_task():
 def projects():
     if 'user' in session:
         user = session['user']
+        user_id = user.get('id')
         if request.method == 'POST':
             try:    
-                user_id = 1
+                user_id = user_id
                 name = request.form.get('name')
                 description = request.form.get('description')
                 created_at = request.form.get('created_at')
@@ -282,7 +297,7 @@ def projects():
             if name:
                 projects = getProjectBySearching(name)
             else:
-                projects = getProjects()
+                projects = getProjectByUserId(user_id)
         return render_template('project.html', projects=projects, user = user)
     else:
         return redirect(url_for('login'))

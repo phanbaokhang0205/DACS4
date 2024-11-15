@@ -19,6 +19,22 @@ def getTasks():
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
     
+def getTaskByUserId(user_id):
+    url = f'{BASE_URL}/tasks/{user_id}'
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
 def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority):
     url = f'{BASE_URL}/tasks'
     payload = {
@@ -104,6 +120,21 @@ def getProjects():
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
     
+def getProjectByUserId(user_id):
+    url = f'{BASE_URL}/projects/{user_id}'
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
 
 def addProject(user_id, name, description, created_at, updated_at):
     url = f'{BASE_URL}/projects'
