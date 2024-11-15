@@ -155,7 +155,7 @@ def dashboard():
         tasks = getTaskByUserId(user_id)
         project_count = len(getProjectByUserId(user_id))
         task_count = len(getTaskByUserId(user_id))
-        done_count = sum(1 for task in tasks if task['status'] == 'DONE')
+        done_count = sum(1 for task in tasks if task['status'] == 'COMPLETED')
         doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
         todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
         recent_tasks = sorted(tasks, key=lambda x: x['due_day'], reverse=True)[:3]
@@ -209,7 +209,7 @@ def tasks():
         else:
             title = request.args.get('search')
             if title:
-                tasks = getTaskBySearching(title)
+                tasks = getTaskBySearching(user_id, title)
             else:
                 tasks = getTaskByUserId(user_id)
         return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
@@ -296,7 +296,7 @@ def projects():
         else:
             name = request.args.get('search')
             if name:
-                projects = getProjectBySearching(name)
+                projects = getProjectBySearching(user_id, name)
             else:
                 projects = getProjectByUserId(user_id)
         return render_template('project.html', projects=projects, user = user)

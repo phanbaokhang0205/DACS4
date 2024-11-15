@@ -6,8 +6,8 @@
     <div class="page-wrapper">
         <div class="content container-fluid">
             <div class="page-name 	mb-4">
-                <h4 class="m-0"><img style="width: 50px; height: 50px; border-radius: 50%; border: 1px solid sandybrown; object-fit: cover;" src="{{ user['avatar'] }}" class="mr-1" alt="profile" /> Welcome {{ user['email'] }}! Let's do some tasks!</h4>
-                <label>Sun, 29 Nov 2019</label>
+                <h4 class="m-0"><img style="width: 50px; height: 50px; border-radius: 50%; border: 1px solid sandybrown; object-fit: cover;" src="{{ user['avatar'] }}" class="mr-1" alt="profile" /> Welcome {{ user['fullname'] }}! Let's do some tasks!</h4>
+                <label id="curten_date_dashboard"></label>
             </div>
             <div class="row mb-4">
                 <div class="col-xl-12 col-sm-12 col-12">
@@ -107,30 +107,35 @@
                 <div class="col-xl-12 col-sm-12 col-12 d-flex">
                     <div class="card card-list flex-fill">
                         <div class="card-header ">
-                            <h4 class="card-title">Recently completed tasks</h4>
+                            <h4 class="card-title">Recently tasks</h4>
                         </div>
                         {% for t in recent_tasks %}
                             <div class="card-body">
                                 <div class="team-list">
                                     <div class="team-view">
                                         <div class="team-content mx-4 my-0">
-                                            <label>{{t.title}}</label>
-                                            <span>{{t.description}}</span>
+                                            <label style="color: orange;">{{t.title}}</label>
+                                            <span style="color: rgb(0, 31, 92);">{{t.description}}</span>
                                         </div>
-                                    </div>
-                                    <div class="team-action">
-                                        <ul>
-                                            <li><a><i data-feather="trash-2"></i></a></li>
-                                            <li><a><i data-feather="edit-2"></i></a></li>
-                                        </ul>
                                     </div>
                                 </div>
                             </div>
                         {% endfor %}
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Lấy ngày hiện tại
+        const now = new Date();
+
+        // Định dạng ngày
+        const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+        const formattedDate = now.toLocaleDateString('en-US', options);
+
+        // Hiển thị ngày vào thẻ <label>
+        document.getElementById('curten_date_dashboard').textContent = formattedDate;
+    </script>
 {% endblock %}

@@ -63,24 +63,26 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
         print(f"Error occurred: {e}")
         return None
 
-def getTaskBySearching(keywords):
-    base_url = f'{BASE_URL}/tasks/search'
+def getTaskBySearching(user_id, keywords):
+    # Thêm user_id vào URL
+    base_url = f'{BASE_URL}/tasks/search/{user_id}'
     params = {
-        'title': keywords
+        'title': keywords  # Thêm từ khóa tìm kiếm vào query parameters
     }
     try:
         # Gửi yêu cầu GET đến API
         response = requests.get(base_url, params=params)
         
         if response.status_code == 200:
-            return response.json() 
+            return response.json()  # Trả về danh sách task dưới dạng JSON
         else:
             print(f"Không thể lấy dữ liệu: {response.status_code}")
-            return []
+            return []  # Trả về danh sách rỗng nếu lỗi HTTP
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return []  # Trả về danh sách rỗng nếu xảy ra lỗi yêu cầu
+
     
 def delete_task(task_id):
     try:
@@ -161,8 +163,8 @@ def addProject(user_id, name, description, created_at, updated_at):
         print(f"Error occurred: {e}")
         return None
     
-def getProjectBySearching(keywords):
-    base_url = f'{BASE_URL}/projects/search'
+def getProjectBySearching(user_id, keywords):
+    base_url = f'{BASE_URL}/projects/search/{user_id}'
     params = {
         'name': keywords
     }
@@ -179,7 +181,8 @@ def getProjectBySearching(keywords):
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
-    
+
+
 def delete_project(project_id):
     try:
         response = requests.delete(f'{BASE_URL}/projects/{project_id}')

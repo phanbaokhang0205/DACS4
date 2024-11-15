@@ -37,13 +37,13 @@
                         <table class="table  custom-table no-footer">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Due date</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                    <th>Update</th>
-                                    <th>Delete</th>
+                                    <th style="color: coral;">Name</th>
+                                    <th style="color: coral;">Description</th>
+                                    <th style="color: coral;">Due date</th>
+                                    <th style="color: coral;">Status</th>
+                                    <th style="color: coral;">Priority</th>
+                                    <th style="color: coral;">Update</th>
+                                    <th style="color: coral;">Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,7 +59,7 @@
                                     <td>
                                         <label>{{t.description}}</label>
                                     </td>
-                                    <td><label>{{t.due_day | format_date}}</label></td>
+                                    <td><label style="color: crimson; font-weight: bold;">{{t.due_day | format_date}}</label></td>
                                     <td class="tab-select">
                                         <select class="select" style="padding: 10px 20px; font-weight: bold;"
                                             onchange="changeColor(this)">
@@ -235,6 +235,13 @@
                     <div class="row mb-4">
                         <div class="col-xl-3 col-sm-6 col-12 mx-auto">
                             <div class=" form-popup m-0">
+                                <label><b>Begin day</b></label>
+                                <input name="beginDay" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
                                 <label><b>Due Date</b></label>
                                 <input name="dueDay" type="date"
                                     style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
@@ -248,13 +255,6 @@
                                     <option value="IN_PROGRESS">Doing</option>
                                     <option value="COMPLETED">Completed</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                            <div class=" form-popup m-0">
-                                <label><b>Begin day</b></label>
-                                <input name="beginDay" type="date"
-                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
                             </div>
                         </div>
                         <div class="col-xl-3 col-sm-6 col-12 mx-auto">
@@ -349,6 +349,13 @@
                     <div class="row mb-4">
                         <div class="col-xl-3 col-sm-6 col-12 mx-auto">
                             <div class=" form-popup m-0">
+                                <label><b>Begin day</b></label>
+                                <input name="beginDay-update" type="date"
+                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
+                            <div class=" form-popup m-0">
                                 <label><b>Due Date</b></label>
                                 <input name="dueDay-update" type="date"
                                     style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
@@ -362,13 +369,6 @@
                                     <option value="IN_PROGRESS">Doing</option>
                                     <option value="COMPLETED">Completed</option>
                                 </select>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-sm-6 col-12 mx-auto">
-                            <div class=" form-popup m-0">
-                                <label><b>Begin day</b></label>
-                                <input name="beginDay-update" type="date"
-                                    style="width: 100%; padding: 20px 10px; border: 0.1px solid #ececec; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
                             </div>
                         </div>
                         <div class="col-xl-3 col-sm-6 col-12 mx-auto">

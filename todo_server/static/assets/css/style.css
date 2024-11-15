@@ -4353,7 +4353,7 @@ a.delete {
 	display: -webkit-flex;
     align-items: center;
     padding: 10px;
-    background: #fff;
+    background: whitesmoke;
     transition: all 0.5s;
     border-radius: 20px;
 }
@@ -4393,7 +4393,6 @@ a.delete {
 .team-list {
     align-items: center;
     transition: all 0.5s;
-    margin-bottom: 20px;
     border-radius: 20px;
     border: 1px solid #F2EEEE;
 }
