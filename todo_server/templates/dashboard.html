@@ -109,76 +109,25 @@
                         <div class="card-header ">
                             <h4 class="card-title">Recently completed tasks</h4>
                         </div>
-                        <div class="card-body">
-                            <div class="team-list">
-                                <div class="team-view">
-                                    <div class="team-img">
-                                        <img src="../static/assets/img/profiles/avatar-03.jpg" alt="avatar" />
+                        {% for t in recent_tasks %}
+                            <div class="card-body">
+                                <div class="team-list">
+                                    <div class="team-view">
+                                        <div class="team-content mx-4 my-0">
+                                            <label>{{t.title}}</label>
+                                            <span>{{t.description}}</span>
+                                        </div>
                                     </div>
-                                    <div class="team-content">
-                                        <label>Lab 1</label>
-                                        <span>Python</span>
+                                    <div class="team-action">
+                                        <ul>
+                                            <li><a><i data-feather="trash-2"></i></a></li>
+                                            <li><a><i data-feather="edit-2"></i></a></li>
+                                        </ul>
                                     </div>
-                                </div>
-                                <div class="team-action">
-                                    <ul>
-                                        <li><a><i data-feather="trash-2"></i></a></li>
-                                        <li><a><i data-feather="edit-2"></i></a></li>
-                                    </ul>
                                 </div>
                             </div>
-                            <div class="team-list">
-                                <div class="team-view">
-                                    <div class="team-img">
-                                        <img src="../static/assets/img/profiles/avatar-04.jpg" alt="avatar" />
-                                    </div>
-                                    <div class="team-content">
-                                        <label>Lab 2</label>
-                                        <span>Java</span>
-                                    </div>
-                                </div>
-                                <div class="team-action">
-                                    <ul>
-                                        <li><a><i data-feather="trash-2"></i></a></li>
-                                        <li><a><i data-feather="edit-2"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team-list">
-                                <div class="team-view">
-                                    <div class="team-img">
-                                        <img src="../static/assets/img/profiles/avatar-06.jpg" alt="avatar" />
-                                    </div>
-                                    <div class="team-content">
-                                        <label>Lab 3</label>
-                                        <span>Python</span>
-                                    </div>
-                                </div>
-                                <div class="team-action">
-                                    <ul>
-                                        <li><a><i data-feather="trash-2"></i></a></li>
-                                        <li><a><i data-feather="edit-2"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="team-list">
-                                <div class="team-view">
-                                    <div class="team-img">
-                                        <img src="../static/assets/img/profiles/avatar-11.jpg" alt="avatar" />
-                                    </div>
-                                    <div class="team-content">
-                                        <label>Lab 4</label>
-                                        <span>JS</span>
-                                    </div>
-                                </div>
-                                <div class="team-action">
-                                    <ul>
-                                        <li><a><i data-feather="trash-2"></i></a></li>
-                                        <li><a><i data-feather="edit-2"></i></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
+                        
                     </div>
                 </div>
             </div>

@@ -158,11 +158,12 @@ def dashboard():
         done_count = sum(1 for task in tasks if task['status'] == 'DONE')
         doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
         todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
+        recent_tasks = sorted(tasks, key=lambda x: x['due_day'], reverse=True)[:3]
 
         return render_template('dashboard.html',
             user = user, project_count = project_count, 
             task_count = task_count, done_count = done_count, 
-            doing_count = doing_count, todo_count = todo_count
+            doing_count = doing_count, todo_count = todo_count, recent_tasks = recent_tasks
         )
     else:
         return redirect(url_for('login'))
