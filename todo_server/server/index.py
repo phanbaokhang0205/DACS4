@@ -37,7 +37,7 @@ class App(ctk.CTk):
         self.body.place(relx=0.22, rely=0.17, relwidth=0.77, relheight=0.82)
 
         # Default view
-        self.navigate_to_frame("requests")
+        self.navigate_to_frame("dashboard")
 
     def navigate_to_frame(self, frame_name):
         # Hide all frames
@@ -101,10 +101,6 @@ class SiderFrame(ctk.CTkFrame):
         self.users = self.create_button(
             "Users", "server/icons/group.png", "users")
         self.users.pack(fill="x", anchor=ctk.W, padx=10)
-        # Notifications
-        self.notis = self.create_button(
-            "Notification", "server/icons/notification.png", "notis")
-        self.notis.pack(fill="x", anchor=ctk.W, padx=10)
 
     def create_button(self, text, icon_path, frame_name):
         frame = ctk.CTkFrame(self, fg_color='transparent', corner_radius=10)
@@ -128,16 +124,160 @@ class BodyFrame(ctk.CTkFrame):
             "requests": Requests_Frame(self, log_list),
             "users": Users_Frame(self),
             "dashboard": Dashboard_Frame(self),
-            "notis": Notis_Frame(self)
         }
 
 
 class Dashboard_Frame(ctk.CTkScrollableFrame):
     def __init__(self, master):
-        super().__init__(master, corner_radius=10, fg_color='red')
-        label = ctk.CTkLabel(self, text="Dashboard Content",
-                             font=("Arial", 20), text_color="white")
-        label.pack(pady=20)
+        super().__init__(master, corner_radius=10, fg_color='#768FCF')
+
+        self.frame = self.dashFrame(self)
+        self.frame.pack(fill='both')
+
+    def dashFrame(self, master):
+        frame = ctk.CTkFrame(master, fg_color='transparent')
+        # System information
+        sys_info_title = self.titleLabel(frame, "System Information")
+        sys_info_title.pack(fill='both', padx=20, pady=10)
+
+        system_info = get_system_info()  # API call hoặc hàm hệ thống
+
+        if system_info:
+
+            # Frame chứa CPU và RAM
+            sys_info_row1 = ctk.CTkFrame(frame, fg_color='transparent')
+            sys_info_row1.pack(fill='x', padx=100, pady=10)
+
+            # CPU
+
+            self.cpu_card = self.sys_card(sys_info_row1, "#76CF8C", "server/icons/CPU.png",
+                                     "CPU", usage=system_info["cpu_usage"], used=None, total=None)
+            self.cpu_card.pack(fill='x', expand=False, side=ctk.LEFT)
+
+            # RAM
+            self.ram_card = self.sys_card(sys_info_row1, "#CFCC76", "server/icons/RAM.png", "RAM",
+                                    usage=system_info["memory_usage_percent"], used=system_info["used_memory"],
+                                    total=system_info["total_memory"])
+            self.ram_card.pack(expand=True, anchor=ctk.E)
+            
+
+
+            # Frame chứa DISK và STATUS
+            sys_info_row2 = ctk.CTkFrame(frame, fg_color='transparent')
+            sys_info_row2.pack(fill='x', padx=100, pady=10)
+            # DISK
+            self.disk_card = self.sys_card(
+                sys_info_row2, "#CF7676", "server/icons/DISK.png",
+                "DISK", usage=system_info["disk_usage_percent"], 
+                used=system_info["used_disk"], 
+                total=system_info["total_disk"]
+            )
+            self.disk_card.pack(fill='x', expand=False, side=ctk.LEFT)
+
+            # STATUS
+            self.status_card = self.sys_card(
+                sys_info_row2, "#A776CF", "server/icons/STATUS.png", 
+                "STATUS", usage=None, used=None, total=None)
+            self.status_card.pack(expand=True, anchor=ctk.E)
+
+        # Statistical Information
+        statis_info_title = self.titleLabel(frame, "Statistical Information")
+        statis_info_title.pack(fill='both', padx=20, pady=10)
+
+        return frame
+
+    def update_dashboard(self, system_info):
+        # Cập nhật các giá trị CPU, RAM, DISK
+        global cpu_card, ram_card, disk_card
+
+            # Cập nhật CPU
+        self.cpu_card.usage_label.configure(text=f"{system_info['cpu_usage']} %")
+        self.cpu_card.monitor["progress_var"].set(system_info["cpu_usage"] / 100)
+
+        # Cập nhật RAM
+        self.ram_card.usage_label.configure(text=f"{system_info['memory_usage_percent']} %")
+        if self.ram_card.used_label:
+            self.ram_card.used_label.configure(
+                text=f"{system_info['used_memory']} GB / {system_info['total_memory']} GB"
+            )
+        self.ram_card.monitor["progress_var"].set(system_info["memory_usage_percent"] / 100)
+
+        # Cập nhật DISK
+        self.disk_card.usage_label.configure(text=f"{system_info['disk_usage_percent']} %")
+        if self.disk_card.used_label:
+            self.disk_card.used_label.configure(
+                text=f"{system_info['used_disk']} GB / {system_info['total_disk']} GB"
+            )
+        self.disk_card.monitor["progress_var"].set(system_info["disk_usage_percent"] / 100)
+
+
+
+
+    def create_monitor_frame(self, master, color, var):
+        frame = ctk.CTkFrame(master, fg_color="transparent")
+
+        min_value = 0.0
+        max_value = 100.0
+        normalized_var = (var - min_value) / (max_value - min_value)
+        # Thanh trạng thái
+        progress_var = ctk.DoubleVar()
+        progress_bar = ctk.CTkProgressBar(
+            frame, variable=progress_var, fg_color="#DDDDDD", progress_color=color, height=20, width=250, border_width=2)
+        progress_bar.set(normalized_var)  # Giá trị mặc định là 0
+        progress_bar.pack(side="left", fill="x", expand=True, padx=10)
+
+        return {
+            "frame": frame,
+            "progress_var": progress_var,
+            "progress_bar": progress_bar
+        }
+
+
+    def titleLabel(self, master, content):
+        frame = ctk.CTkFrame(master, fg_color="#6D96FF",
+                             border_width=2, border_color='black', corner_radius=20)
+        label = ctk.CTkLabel(frame, text=content, font=(
+            'Arial', 32, 'bold'), text_color='black', anchor='center')
+        label.pack(fill='x', padx=20, pady=10)
+        return frame
+
+    def sys_card(self, master, color, img_src, title, usage, used, total):
+        card = ctk.CTkFrame(master, fg_color=color, corner_radius=10)
+        
+        # Left: Ảnh và tiêu đề
+        left = ctk.CTkFrame(card, fg_color='transparent')
+        left.pack(side=ctk.LEFT, padx=(30,15), pady=10)
+        image_src = ctk.CTkImage(Image.open(img_src), size=(100, 100))
+        image = ctk.CTkLabel(left, text='', image=image_src)
+        image.pack(pady=10)
+        title_label = ctk.CTkLabel(left, text=title, font=("Arial", 22, "bold"), text_color='white')
+        title_label.pack()
+
+        # Right: Usage và thanh tiến trình
+        right = ctk.CTkFrame(card, fg_color='transparent')
+        right.pack(side=ctk.RIGHT, padx=(15, 30), pady=5)
+        
+
+        if (title != "STATUS"):
+            if used is not None and total is not None:
+                used_label = ctk.CTkLabel(right, text=f"{used} GB / {total} GB", font=("Arial", 22, 'bold'), text_color='white')
+                used_label.pack(pady=10)
+
+            usage_label = ctk.CTkLabel(right, text=f"{usage} %", font=("Arial", 52, 'bold'), text_color='white')
+            usage_label.pack(pady=5)
+            self.monitor = self.create_monitor_frame(right, color, usage)
+            self.monitor["frame"].pack(pady=10)
+            card.monitor = self.monitor  # Lưu monitor để sử dụng sau
+
+             # Lưu tham chiếu
+            card.usage_label = usage_label
+            card.used_label = used_label if used is not None else None
+        else:
+            label = ctk.CTkLabel(right, text="ON", font=(
+                "Arial", 52, 'bold'), text_color='white')
+            label.pack(pady=5)
+        
+        return card
 
 
 class Requests_Frame(ctk.CTkFrame):
@@ -323,8 +463,8 @@ class Users_Frame(ctk.CTkFrame):
         style.configure("Treeview.Heading",
                         # tăng kích thước và đậm cho tiêu đề
                         font=("Arial", 14, "bold"),
-                        background="#CFDDFF", # màu nền cho tiêu đề
-                        rowheight=30,  
+                        background="#CFDDFF",  # màu nền cho tiêu đề
+                        rowheight=30,
                         foreground="black")    # màu chữ cho tiêu đề
         # màu dòng được chọn
         style.map("Treeview", background=[("selected", "#768FCF")])
@@ -333,7 +473,7 @@ class Users_Frame(ctk.CTkFrame):
         columns = ("ID", "Fullname", "Age", "Gender", "Phone",
                    "Address", "Email", "Username", "Password")
         self.tree = ttk.Treeview(frame, columns=columns,
-                            show="headings", style="Treeview")
+                                 show="headings", style="Treeview")
 
         # Định nghĩa tiêu đề các cột và thiết lập kích thước cột
         for col in columns:
@@ -345,9 +485,9 @@ class Users_Frame(ctk.CTkFrame):
         sample_data = getUsers()
         for data in sample_data:
             self.tree.insert("", "end",
-                values=(data['id'], data['fullname'], data['age'],
-                        data['gender'], data['phone'], data['address'], data['email'],
-                        data['username'], data['password']))
+                             values=(data['id'], data['fullname'], data['age'],
+                                     data['gender'], data['phone'], data['address'], data['email'],
+                                     data['username'], data['password']))
 
         # Tạo thanh cuộn dọc (không tạo thanh cuộn ngang)
         # vsb = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
@@ -361,22 +501,16 @@ class Users_Frame(ctk.CTkFrame):
         self.auto_resize_columns()
 
         return frame  # Trả về frame để tránh lỗi AttributeError
-    
+
     def auto_resize_columns(self):
         # Duyệt qua từng cột trong Treeview
         for col in self.tree["columns"]:
             max_width = 0
             # Tính độ rộng lớn nhất của nội dung trong mỗi hàng
             for item in self.tree.get_children():
-                cell_value = str(self.tree.item(item)["values"][self.tree["columns"].index(col)])
+                cell_value = str(self.tree.item(
+                    item)["values"][self.tree["columns"].index(col)])
                 max_width = max(max_width, len(cell_value))
-            
+
             # Đặt chiều rộng của cột bằng độ dài lớn nhất * hệ số pixel (7 hoặc 10)
             self.tree.column(col, width=max_width * 10)
-
-class Notis_Frame(ctk.CTkScrollableFrame):
-    def __init__(self, master):
-        super().__init__(master, corner_radius=10, fg_color='pink')
-        label = ctk.CTkLabel(self, text="Notifications Content", font=(
-            "Arial", 20), text_color="white")
-        label.pack(pady=20)

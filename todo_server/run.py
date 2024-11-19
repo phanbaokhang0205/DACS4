@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-import socket, threading
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+import socket, threading, time
 from datetime import datetime
 from call_api import *
-from server.index import App
+from server.index import App, Dashboard_Frame
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
@@ -345,7 +345,19 @@ def handle_update_project():
     else:
         return redirect(url_for('login'))
     
-#=================================MAIN================================
+#=================================SYSTEM INFO================================
+@app.route('/system_info', methods=['GET'])
+def system_info():
+    info = get_system_info()
+    return jsonify(info)
+
+def update_system_info(dashboard_frame):
+    while True:
+        system_info = get_system_info()  # Lấy thông tin từ API hoặc hệ thống
+        if system_info:
+            dashboard_frame.update_dashboard(system_info)  # Cập nhật giao diện
+        time.sleep(0.3)  # Dừng 1 giây trước khi cập nhật tiếp
+#=================================MAIN=======================================
 
 
 if __name__ == '__main__':
@@ -360,6 +372,16 @@ if __name__ == '__main__':
     flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
     flask_thread.start()
 
+    
+
     # Khoi chay giao dien tkinter
     server_ui = App(log_list=log_list)
+
+    #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
+    dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
+    update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
+    update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
+    update_thread.start()
+
+
     server_ui.mainloop()

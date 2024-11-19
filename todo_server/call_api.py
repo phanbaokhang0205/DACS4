@@ -257,3 +257,17 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
 def checkUser():
     pass
 
+# ======================= System Info =================================
+def get_system_info():
+    base_url = f'{BASE_URL}/system_info'
+    try:
+        response = requests.get(base_url)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            return []  # Trả về mảng rỗng nếu có lỗi
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+        return None
+
