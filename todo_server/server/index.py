@@ -59,7 +59,12 @@ class HeaderFrame(ctk.CTkFrame):
         # Shut down Button
         self.shutdown = self.shut_btn(master)
         self.shutdown.pack(side=ctk.RIGHT)
-
+        
+        # refresh button
+        self.refresh = self.refresh_btn()
+        self.refresh.pack(side=ctk.RIGHT)
+        
+        
     def logo_title(self):
         frame = ctk.CTkFrame(self, fg_color="transparent")
         image = ctk.CTkImage(Image.open(
@@ -69,6 +74,18 @@ class HeaderFrame(ctk.CTkFrame):
         title = ctk.CTkLabel(frame, text="Todo Server",
                              font=("Arial", 20), text_color='black')
         title.pack(side=ctk.LEFT, padx=5)
+        return frame
+
+    def refresh_btn(self):
+        frame = ctk.CTkFrame(self, fg_color='transparent')
+        image = ctk.CTkImage(Image.open(
+            "server/icons/refresh.png"), size=(50, 50))
+        button = ctk.CTkButton(frame, image=image, text="", command=self.refresh_data,
+                               fg_color="transparent")
+        label = ctk.CTkLabel(frame, text="Refresh",
+                             font=("Arial", 18), text_color='black')
+        button.pack(padx=0, pady=0)
+        label.pack(padx=0, pady=0)
         return frame
 
     def shut_btn(self, app):
@@ -82,6 +99,31 @@ class HeaderFrame(ctk.CTkFrame):
         button.pack(padx=0, pady=0)
         label.pack(padx=0, pady=0)
         return frame
+    
+    def refresh_data(self):
+        # Lấy thông tin hệ thống
+        tasks = getTasks()  # Hàm lấy danh sách tasks
+        users = getUsers()  # Hàm lấy danh sách users
+
+        # Cập nhật thông tin tasks
+        if tasks:
+            done_tasks = [task for task in tasks if task["status"] == "COMPLETED"]
+            doing_tasks = [task for task in tasks if task["status"] == "IN_PROGRESS"]
+            todo_tasks = [task for task in tasks if task["status"] == "TODO"]
+            self.tasks_card.done_label.configure(text=f"Done: {done_tasks}")
+            self.tasks_card.doing_label.configure(text=f"Doing: {doing_tasks}")
+            self.tasks_card.todo_label.configure(text=f"Todo: {todo_tasks}")
+
+        # Cập nhật thông tin users
+        if users:
+            total_users = len(users)
+            # online_users = sum(1 for user in users if user.get("is_online"))
+            # offline_users = total_users - online_users
+
+            self.users_statisCard.user_quantity.configure(text=f"Total: {total_users}")
+            # self.users_statisCard.online.configure(text=f"Online: {online_users}")
+            # self.users_statisCard.offline.configure(text=f"Offline: {offline_users}")
+
 
 
 class SiderFrame(ctk.CTkFrame):
@@ -141,6 +183,12 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         sys_info_title.pack(fill='both', padx=20, pady=10)
 
         system_info = get_system_info()  # API call hoặc hàm hệ thống
+        user_quantity = getUsers()
+        task_quantity = getTasks()
+        done_tasks = [task for task in task_quantity if task["status"] == "COMPLETED"]
+        doing_tasks = [task for task in task_quantity if task["status"] == "IN_PROGRESS"]
+        todo_tasks = [task for task in task_quantity if task["status"] == "TODO"]
+
 
         if system_info:
 
@@ -180,12 +228,43 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
                 "STATUS", usage=None, used=None, total=None)
             self.status_card.pack(expand=True, anchor=ctk.E)
 
-        # Statistical Information
-        statis_info_title = self.titleLabel(frame, "Statistical Information")
-        statis_info_title.pack(fill='both', padx=20, pady=10)
+        if user_quantity:
+            total_users = len(user_quantity)
+            total_tasks = len(task_quantity)
+            _done = len(done_tasks)
+            _doing = len(doing_tasks)
+            _todo = len(todo_tasks)
+            # Statistical Information
+            statis_info_title = self.titleLabel(frame, "Statistical Information")
+            statis_info_title.pack(fill='both', padx=20, pady=10)
+
+            # Statis frame
+            statis_frame = ctk.CTkFrame(frame, fg_color='transparent')
+            statis_frame.pack(fill='x')
+
+            # users_statisCard
+            self.users_statisCard = self.users_card(statis_frame, total_users, "20", "18")
+            self.users_statisCard.pack(fill='x', padx=(100,50), pady=10, side=ctk.LEFT, expand=True, anchor=ctk.N)
+
+            # tasks_statisCard
+            self.task_statisCard = self.tasks_card(statis_frame, total_tasks, _done, _doing, _todo)
+            self.task_statisCard.pack(fill='x', padx=(50,100), pady=10, side=ctk.RIGHT, expand=True, anchor=ctk.N)
+
+        # request rate
+        request_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        request_frame.pack(fill='x', padx=150)
+        self.success_rate = self.request_rate(request_frame, "#6DFF9B", "Success Request", "server/icons/success.png", "12")
+        self.success_rate.pack(side=ctk.LEFT,  expand=False)
+        
+        self.fail_rate = self.request_rate(request_frame, "#FF6D6D", "Fail Request", "server/icons/fail.png", "12")
+        self.fail_rate.pack( anchor=ctk.E)
 
         return frame
 
+    
+    
+
+# ============= system infomation =========================
     def update_dashboard(self, system_info):
         # Cập nhật các giá trị CPU, RAM, DISK
         global cpu_card, ram_card, disk_card
@@ -210,9 +289,6 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
             )
         self.disk_card.monitor["progress_var"].set(system_info["disk_usage_percent"] / 100)
 
-
-
-
     def create_monitor_frame(self, master, color, var):
         frame = ctk.CTkFrame(master, fg_color="transparent")
 
@@ -222,7 +298,7 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         # Thanh trạng thái
         progress_var = ctk.DoubleVar()
         progress_bar = ctk.CTkProgressBar(
-            frame, variable=progress_var, fg_color="#DDDDDD", progress_color=color, height=20, width=250, border_width=2)
+            frame, variable=progress_var, fg_color="#DDDDDD", progress_color=color, height=20, width=250, corner_radius=0, border_width=2)
         progress_bar.set(normalized_var)  # Giá trị mặc định là 0
         progress_bar.pack(side="left", fill="x", expand=True, padx=10)
 
@@ -231,8 +307,7 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
             "progress_var": progress_var,
             "progress_bar": progress_bar
         }
-
-
+    
     def titleLabel(self, master, content):
         frame = ctk.CTkFrame(master, fg_color="#6D96FF",
                              border_width=2, border_color='black', corner_radius=20)
@@ -263,21 +338,129 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
                 used_label = ctk.CTkLabel(right, text=f"{used} GB / {total} GB", font=("Arial", 22, 'bold'), text_color='white')
                 used_label.pack(pady=10)
 
-            usage_label = ctk.CTkLabel(right, text=f"{usage} %", font=("Arial", 52, 'bold'), text_color='white')
+            usage_label = ctk.CTkLabel(right,text=f"{usage} %", font=("Arial", 52, 'bold'), text_color='white')
             usage_label.pack(pady=5)
             self.monitor = self.create_monitor_frame(right, color, usage)
             self.monitor["frame"].pack(pady=10)
             card.monitor = self.monitor  # Lưu monitor để sử dụng sau
 
-             # Lưu tham chiếu
+            # Lưu tham chiếu
             card.usage_label = usage_label
             card.used_label = used_label if used is not None else None
         else:
             label = ctk.CTkLabel(right, text="ON", font=(
-                "Arial", 52, 'bold'), text_color='white')
+                "Arial", 52, 'bold'), text_color='white', width=270)
             label.pack(pady=5)
+        return card
+    
+# ============= Statistical Information =========================
+    def statisCard(self, master, title, image):
+        card = ctk.CTkFrame(master, fg_color="transparent")
+        # Header
+        title_label = ctk.CTkLabel(card, text=title, font=("Aria", 22, "bold"), text_color='black')
+        title_label.pack(fill='x')
+        # image
+        image_src = ctk.CTkImage(Image.open(image), size=(100, 100))
+        image = ctk.CTkLabel(card, text='', image=image_src)
+        image.pack(pady=10)
         
         return card
+    
+    def users_card(self, master, quantity, online, offline):
+        frame = ctk.CTkFrame(master, fg_color='#6D96FF', corner_radius=20)
+        # Header
+        header = self.statisCard(frame, "Users", "server/icons/users.png")
+        header.pack(fill='x', pady=10, padx=20)
+        # Quantity
+        self.user_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
+        self.user_quantity.pack(fill='x', pady=10, padx=20)
+
+        # Online frame
+        online_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        online_frame.pack(fill='x', pady=10, padx=20)
+        # online quantity
+        self.online = ctk.CTkLabel(online_frame, text=f"Online: {online}", font=("Aria", 22, 'bold'), text_color='black')
+        self.online.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # online image
+        online_src = ctk.CTkImage(Image.open("server/icons/online.png"), size=(50, 50))
+        self.online_img = ctk.CTkLabel(online_frame, text='', image=online_src)
+        self.online_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+
+        # offline frame
+        offline_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        offline_frame.pack(fill='x', pady=10, padx=20)
+        # offline quantity
+        self.offline = ctk.CTkLabel(offline_frame, text=f"Offline: {offline}", font=("Aria", 22, 'bold'), text_color='black')
+        self.offline.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # offline image
+        offline_src = ctk.CTkImage(Image.open("server/icons/offline.png"), size=(50, 50))
+        self.offline_img = ctk.CTkLabel(offline_frame, text='', image=offline_src)
+        self.offline_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        
+        return frame
+
+    def tasks_card(self, master, quantity, done, doing, todo):
+        frame = ctk.CTkFrame(master, fg_color='#6D96FF', corner_radius=20)
+        # Header
+        header = self.statisCard(frame, "Tasks", "server/icons/tasks.png")
+        header.pack(fill='x', pady=10, padx=20)
+        # Quantity
+        self.tasks_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
+        self.tasks_quantity.pack(fill='x', pady=10, padx=20)
+
+        # done frame
+        done_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        done_frame.pack(fill='x', pady=10, padx=20)
+        # done quantity
+        self.done_label = ctk.CTkLabel(done_frame, text=f"Done: {done}", font=("Aria", 22, 'bold'), text_color='black')
+        self.done_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # done image
+        done_src = ctk.CTkImage(Image.open("server/icons/done.png"), size=(50, 50))
+        self.done_img = ctk.CTkLabel(done_frame, text='', image=done_src)
+        self.done_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+
+        # doing frame
+        doing_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        doing_frame.pack(fill='x', pady=10, padx=20)
+        # doing quantity
+        self.doing_label = ctk.CTkLabel(doing_frame, text=f"Doing: {doing}", font=("Aria", 22, 'bold'), text_color='black')
+        self.doing_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # doing image
+        doing_src = ctk.CTkImage(Image.open("server/icons/doing.png"), size=(50, 50))
+        self.doing_img = ctk.CTkLabel(doing_frame, text='', image=doing_src)
+        self.doing_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+
+        # todo frame
+        todo_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        todo_frame.pack(fill='x', pady=10, padx=20)
+        # todo quantity
+        self.todo_label = ctk.CTkLabel(todo_frame, text=f"Todo: {todo}", font=("Aria", 22, 'bold'), text_color='black')
+        self.todo_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # todo image
+        todo_src = ctk.CTkImage(Image.open("server/icons/todo.png"), size=(50, 50))
+        self.todo_img = ctk.CTkLabel(todo_frame, text='', image=todo_src)
+        self.todo_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        
+        return frame
+
+    def request_rate(self, master, color, title, img, rate):
+        frame = ctk.CTkFrame(master, fg_color=color, corner_radius=20)
+        
+        # title
+        title_label = ctk.CTkLabel(frame, text=title, text_color='black', font=("Aria", 32, 'bold'))
+        title_label.pack(fill='x' ,padx=50, pady=30)
+
+        # image 
+        rate_src = ctk.CTkImage(Image.open(img), size=(100, 100))
+        self.rate_img = ctk.CTkLabel(frame, text='', image=rate_src)
+        self.rate_img.pack(padx=50, pady=10)
+
+        # Rate
+        rate_label = ctk.CTkLabel(frame, text=f"{rate} %", text_color='black', font=("Aria", 42, 'bold'))
+        rate_label.pack(fill='x' ,padx=50, pady=30)
+
+        return frame
+    
 
 
 class Requests_Frame(ctk.CTkFrame):

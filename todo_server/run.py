@@ -356,7 +356,7 @@ def update_system_info(dashboard_frame):
         system_info = get_system_info()  # Lấy thông tin từ API hoặc hệ thống
         if system_info:
             dashboard_frame.update_dashboard(system_info)  # Cập nhật giao diện
-        time.sleep(0.3)  # Dừng 1 giây trước khi cập nhật tiếp
+        time.sleep(0.)  # Dừng 1 giây trước khi cập nhật tiếp
 #=================================MAIN=======================================
 
 
