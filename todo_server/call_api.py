@@ -215,7 +215,12 @@ def getUsers():
         # Kiểm tra mã trạng thái
         if response.status_code == 200:
             # Chuyển đổi dữ liệu từ JSON thành Python dictionary
-            return response.json()  # Trả về danh sách người dùng
+            data = response.json()
+            users = data.get('users', [])
+            online_count = data.get('online_count', 0)
+            offline_count = data.get('offline_count', 0)
+            print(f"Số lượng online: {online_count}, offline: {offline_count}")
+            return users  # Trả về danh sách người dùng
         else:
             print(f"Không thể lấy dữ liệu: {response.status_code}")
             return []  # Trả về mảng rỗng nếu có lỗi
@@ -237,7 +242,7 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
         "username": username,
         "password": password,
         "avatar": avatar,
-        "create_at": create_at,
+        "create_at": create_at
     }
     
     # Gui yeu cau post
@@ -254,8 +259,18 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
             print(f"Error occurred: {e}")
             return None
 
-def checkUser():
-    pass
+def update_user_status(user_id, is_online):
+    url = f"{BASE_URL}/users/{user_id}/status"
+    try:
+        response = requests.put(url, json={'isOnline': is_online})
+        if response.status_code == 200:
+            return True  # Thành công
+        else:
+            print(f"Không thể cập nhật trạng thái: {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"Lỗi khi gọi API: {e}")
+        return False
 
 # ======================= System Info =================================
 def get_system_info():

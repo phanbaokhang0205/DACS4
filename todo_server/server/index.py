@@ -171,7 +171,7 @@ class BodyFrame(ctk.CTkFrame):
 
 class Dashboard_Frame(ctk.CTkScrollableFrame):
     def __init__(self, master):
-        super().__init__(master, corner_radius=10, fg_color='#768FCF')
+        super().__init__(master, corner_radius=10, fg_color='#cfe1b9')
 
         self.frame = self.dashFrame(self)
         self.frame.pack(fill='both')
@@ -188,6 +188,10 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         done_tasks = [task for task in task_quantity if task["status"] == "COMPLETED"]
         doing_tasks = [task for task in task_quantity if task["status"] == "IN_PROGRESS"]
         todo_tasks = [task for task in task_quantity if task["status"] == "TODO"]
+
+        # Lấy số lg ng dùng on, off
+        online_users = sum(1 for user in user_quantity if user.get("isOnline"))
+        offline_users = len(user_quantity) - online_users
 
 
         if system_info:
@@ -228,12 +232,17 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
                 "STATUS", usage=None, used=None, total=None)
             self.status_card.pack(expand=True, anchor=ctk.E)
 
+            # Tạo một Frame trống để cách top
+            spacer = ctk.CTkFrame(frame, fg_color="transparent", height=50)
+            spacer.pack(fill='x')
+
         if user_quantity:
             total_users = len(user_quantity)
             total_tasks = len(task_quantity)
             _done = len(done_tasks)
             _doing = len(doing_tasks)
             _todo = len(todo_tasks)
+
             # Statistical Information
             statis_info_title = self.titleLabel(frame, "Statistical Information")
             statis_info_title.pack(fill='both', padx=20, pady=10)
@@ -243,7 +252,7 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
             statis_frame.pack(fill='x')
 
             # users_statisCard
-            self.users_statisCard = self.users_card(statis_frame, total_users, "20", "18")
+            self.users_statisCard = self.users_card(statis_frame, total_users, online_users, offline_users)
             self.users_statisCard.pack(fill='x', padx=(100,50), pady=10, side=ctk.LEFT, expand=True, anchor=ctk.N)
 
             # tasks_statisCard
@@ -253,16 +262,18 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         # request rate
         request_frame = ctk.CTkFrame(frame, fg_color='transparent')
         request_frame.pack(fill='x', padx=150)
-        self.success_rate = self.request_rate(request_frame, "#6DFF9B", "Success Request", "server/icons/success.png", "12")
+        self.success_rate = self.request_rate(request_frame, "#6DFF9B", "Success Request", "server/icons/success.png", 12)
         self.success_rate.pack(side=ctk.LEFT,  expand=False)
         
-        self.fail_rate = self.request_rate(request_frame, "#FF6D6D", "Fail Request", "server/icons/fail.png", "12")
+        self.fail_rate = self.request_rate(request_frame, "#FF6D6D", "Fail Request", "server/icons/fail.png", 88)
         self.fail_rate.pack( anchor=ctk.E)
+
+        # Bảng dữ liệu clients
+        table_client_frame = self.create_client_table(frame)
+        table_client_frame.pack(fill="both", expand=True, pady=20)
 
         return frame
 
-    
-    
 
 # ============= system infomation =========================
     def update_dashboard(self, system_info):
@@ -354,110 +365,176 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         return card
     
 # ============= Statistical Information =========================
-    def statisCard(self, master, title, image):
+    def statisCard(self, master, title):
         card = ctk.CTkFrame(master, fg_color="transparent")
         # Header
-        title_label = ctk.CTkLabel(card, text=title, font=("Aria", 22, "bold"), text_color='black')
+        title_label = ctk.CTkLabel(card, text=title, font=("Aria", 25), text_color='black')
         title_label.pack(fill='x')
         # image
-        image_src = ctk.CTkImage(Image.open(image), size=(100, 100))
-        image = ctk.CTkLabel(card, text='', image=image_src)
-        image.pack(pady=10)
+        # image_src = ctk.CTkImage(Image.open(image), size=(100, 100))
+        # image = ctk.CTkLabel(card, text='', image=image_src)
+        # image.pack(pady=10)
         
         return card
     
     def users_card(self, master, quantity, online, offline):
-        frame = ctk.CTkFrame(master, fg_color='#6D96FF', corner_radius=20)
+        frame = ctk.CTkFrame(master, fg_color='#C3C7F4', corner_radius=10, width=170, height=100)
+        frame.pack_propagate(False)  # Ngăn frame tự động điều chỉnh kích thước theo nội dung
+
         # Header
-        header = self.statisCard(frame, "Users", "server/icons/users.png")
-        header.pack(fill='x', pady=10, padx=20)
+        header = self.statisCard(frame, f"Total Users: {quantity}")
+        header.pack(fill='x', pady=10)
         # Quantity
-        self.user_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
-        self.user_quantity.pack(fill='x', pady=10, padx=20)
+        # self.user_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
+        # self.user_quantity.pack(fill='x', pady=10, padx=20)
 
         # Online frame
-        online_frame = ctk.CTkFrame(frame, fg_color='transparent')
-        online_frame.pack(fill='x', pady=10, padx=20)
+        total_users_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        total_users_frame.pack(fill='x', pady=5)
         # online quantity
-        self.online = ctk.CTkLabel(online_frame, text=f"Online: {online}", font=("Aria", 22, 'bold'), text_color='black')
-        self.online.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        self.total_users = ctk.CTkLabel(total_users_frame, text=f"Online: {online}, Offline: {offline}", font=("Aria", 20), text_color='black', justify='center', anchor='center')
+        self.total_users.pack(side=ctk.TOP, expand=True)
         # online image
-        online_src = ctk.CTkImage(Image.open("server/icons/online.png"), size=(50, 50))
-        self.online_img = ctk.CTkLabel(online_frame, text='', image=online_src)
-        self.online_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        # online_src = ctk.CTkImage(Image.open("server/icons/online.png"), size=(50, 50))
+        # self.online_img = ctk.CTkLabel(online_frame, text='', image=online_src)
+        # self.online_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
 
         # offline frame
-        offline_frame = ctk.CTkFrame(frame, fg_color='transparent')
-        offline_frame.pack(fill='x', pady=10, padx=20)
+        # offline_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        # offline_frame.pack(fill='x', pady=10, padx=20)
         # offline quantity
-        self.offline = ctk.CTkLabel(offline_frame, text=f"Offline: {offline}", font=("Aria", 22, 'bold'), text_color='black')
-        self.offline.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
-        # offline image
-        offline_src = ctk.CTkImage(Image.open("server/icons/offline.png"), size=(50, 50))
-        self.offline_img = ctk.CTkLabel(offline_frame, text='', image=offline_src)
-        self.offline_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        # self.offline = ctk.CTkLabel(offline_frame, text=f"Offline: {offline}", font=("Aria", 22), text_color='black')
+        # self.offline.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # # offline image
+        # offline_src = ctk.CTkImage(Image.open("server/icons/offline.png"), size=(50, 50))
+        # self.offline_img = ctk.CTkLabel(offline_frame, text='', image=offline_src)
+        # self.offline_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
         
         return frame
 
     def tasks_card(self, master, quantity, done, doing, todo):
-        frame = ctk.CTkFrame(master, fg_color='#6D96FF', corner_radius=20)
+        frame = ctk.CTkFrame(master, fg_color='#C3C7F4', corner_radius=10, width=170, height=100)
+        frame.pack_propagate(False)  # Ngăn frame tự động điều chỉnh kích thước theo nội dung
         # Header
-        header = self.statisCard(frame, "Tasks", "server/icons/tasks.png")
-        header.pack(fill='x', pady=10, padx=20)
-        # Quantity
-        self.tasks_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
-        self.tasks_quantity.pack(fill='x', pady=10, padx=20)
+        header = self.statisCard(frame, f"Total Tasks: {quantity}")
+        header.pack(fill='x', pady=10)
+        # # Quantity
+        # self.tasks_quantity = ctk.CTkLabel(frame, text=f"Quantity: {quantity}", font=("Aria", 22, 'bold'), text_color='black')
+        # self.tasks_quantity.pack(fill='x', pady=10, padx=20)
 
         # done frame
-        done_frame = ctk.CTkFrame(frame, fg_color='transparent')
-        done_frame.pack(fill='x', pady=10, padx=20)
+        total_tasks_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        total_tasks_frame.pack(fill='x', pady=5)
         # done quantity
-        self.done_label = ctk.CTkLabel(done_frame, text=f"Done: {done}", font=("Aria", 22, 'bold'), text_color='black')
-        self.done_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        self.total_tasks = ctk.CTkLabel(total_tasks_frame, text=f"Done: {done} - Doing: {doing} - Todo: {todo}", font=("Aria", 20), text_color='black', justify='center', anchor='center')
+        self.total_tasks.pack(side=ctk.TOP, expand=True)
         # done image
-        done_src = ctk.CTkImage(Image.open("server/icons/done.png"), size=(50, 50))
-        self.done_img = ctk.CTkLabel(done_frame, text='', image=done_src)
-        self.done_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        # done_src = ctk.CTkImage(Image.open("server/icons/done.png"), size=(50, 50))
+        # self.done_img = ctk.CTkLabel(done_frame, text='', image=done_src)
+        # self.done_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
 
         # doing frame
-        doing_frame = ctk.CTkFrame(frame, fg_color='transparent')
-        doing_frame.pack(fill='x', pady=10, padx=20)
-        # doing quantity
-        self.doing_label = ctk.CTkLabel(doing_frame, text=f"Doing: {doing}", font=("Aria", 22, 'bold'), text_color='black')
-        self.doing_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
-        # doing image
-        doing_src = ctk.CTkImage(Image.open("server/icons/doing.png"), size=(50, 50))
-        self.doing_img = ctk.CTkLabel(doing_frame, text='', image=doing_src)
-        self.doing_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        # doing_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        # doing_frame.pack(fill='x', pady=10, padx=20)
+        # # doing quantity
+        # self.doing_label = ctk.CTkLabel(doing_frame, text=f"Doing: {doing}", font=("Aria", 22,), text_color='black')
+        # self.doing_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # # doing image
+        # doing_src = ctk.CTkImage(Image.open("server/icons/doing.png"), size=(50, 50))
+        # self.doing_img = ctk.CTkLabel(doing_frame, text='', image=doing_src)
+        # self.doing_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
 
-        # todo frame
-        todo_frame = ctk.CTkFrame(frame, fg_color='transparent')
-        todo_frame.pack(fill='x', pady=10, padx=20)
-        # todo quantity
-        self.todo_label = ctk.CTkLabel(todo_frame, text=f"Todo: {todo}", font=("Aria", 22, 'bold'), text_color='black')
-        self.todo_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
-        # todo image
-        todo_src = ctk.CTkImage(Image.open("server/icons/todo.png"), size=(50, 50))
-        self.todo_img = ctk.CTkLabel(todo_frame, text='', image=todo_src)
-        self.todo_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
+        # # todo frame
+        # todo_frame = ctk.CTkFrame(frame, fg_color='transparent')
+        # todo_frame.pack(fill='x', pady=10, padx=20)
+        # # todo quantity
+        # self.todo_label = ctk.CTkLabel(todo_frame, text=f"Todo: {todo}", font=("Aria", 22,), text_color='black')
+        # self.todo_label.pack(side=ctk.RIGHT, expand=True, anchor=ctk.W)
+        # # todo image
+        # todo_src = ctk.CTkImage(Image.open("server/icons/todo.png"), size=(50, 50))
+        # self.todo_img = ctk.CTkLabel(todo_frame, text='', image=todo_src)
+        # self.todo_img.pack(side=ctk.LEFT, expand=False, padx=(10, 70))
         
         return frame
+    
+    def create_client_table(self, master):
+        # Khung chứa bảng
+        frame = ctk.CTkFrame(master, fg_color="white", corner_radius=10)
+
+        # Tạo kiểu tùy chỉnh cho Treeview
+        style = ttk.Style()
+        style.theme_use("default")
+        style.configure("Treeview",
+                        background="#FFFFFF",
+                        foreground="black",
+                        rowheight=30,
+                        fieldbackground="#FFFFFF",
+                        font=("Arial", 16))
+        style.configure("Treeview.Heading",
+                        font=("Arial", 18, "bold"),
+                        background="#BDD1C5",
+                        foreground="black")
+        style.map("Treeview", background=[("selected", "#768FCF")])
+
+        # Cột của bảng
+        columns = ("ID", "Host", "Number of Requests", "Date")
+        self.tree = ttk.Treeview(frame, columns=columns, show="headings", style="Treeview")
+
+        # Định nghĩa tiêu đề và kích thước cột
+        for col in columns:
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=150, anchor="center")
+
+        # Thêm dữ liệu mẫu
+        data = [
+            (1, "127.0.0.1", 20, "2024/24/12"),
+            (2, "127.0.0.1", 12, "2024/24/12"),
+            (3, "127.0.0.1", 25, "2024/25/12"),
+            (4, "127.0.0.1", 10, "2024/26/12"),
+            (5, "127.0.0.1", 30, "2024/27/12"),
+            (6, "127.0.0.1", 15, "2024/28/12"),
+            (7, "127.0.0.1", 18, "2024/29/12"),
+            (8, "127.0.0.1", 22, "2024/30/12"),
+            (9, "127.0.0.1", 16, "2024/01/01"),
+            (10, "127.0.0.1", 28, "2024/02/01"),
+            (11, "127.0.0.1", 24, "2024/03/01"),
+        ]
+        for row in data:
+            self.tree.insert("", "end", values=row)
+
+        # Tính toán số lượng dòng data
+        rows = len(data)
+        self.tree.config(height=min(rows, 10)) # Chỉ hiển thị tối đa 10 dòng
+
+        # Thanh cuộn dọc
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=self.tree.yview)
+        self.tree.configure(yscroll=scrollbar.set)
+
+        # Đặt bảng và thanh cuộn
+        self.tree.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        # Thêm khoảng cách khi đặt frame
+        frame.pack(fill="both", expand=True, pady=10, padx=10)
+
+        return frame
+
 
     def request_rate(self, master, color, title, img, rate):
-        frame = ctk.CTkFrame(master, fg_color=color, corner_radius=20)
+        frame = ctk.CTkFrame(master, fg_color=color, corner_radius=10, width=320, height=160)
+        frame.pack_propagate(False)  # Ngăn frame tự điều chỉnh kích thước theo nội dung
         
         # title
-        title_label = ctk.CTkLabel(frame, text=title, text_color='black', font=("Aria", 32, 'bold'))
-        title_label.pack(fill='x' ,padx=50, pady=30)
+        title_label = ctk.CTkLabel(frame, text=f"{title}: {rate}%", text_color='black', font=("Aria", 25))
+        title_label.pack(fill='x' ,padx=5, pady=10)
 
         # image 
-        rate_src = ctk.CTkImage(Image.open(img), size=(100, 100))
+        rate_src = ctk.CTkImage(Image.open(img), size=(85,85))
         self.rate_img = ctk.CTkLabel(frame, text='', image=rate_src)
-        self.rate_img.pack(padx=50, pady=10)
-
-        # Rate
-        rate_label = ctk.CTkLabel(frame, text=f"{rate} %", text_color='black', font=("Aria", 42, 'bold'))
-        rate_label.pack(fill='x' ,padx=50, pady=30)
+        self.rate_img.pack(padx=5)
 
         return frame
     
@@ -595,7 +672,7 @@ class Requests_Frame(ctk.CTkFrame):
 
 class Users_Frame(ctk.CTkFrame):
     def __init__(self, master):
-        super().__init__(master, corner_radius=10, fg_color='#768FCF')
+        super().__init__(master, corner_radius=10, fg_color='#E7F5DC')
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=10)

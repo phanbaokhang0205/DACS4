@@ -82,11 +82,11 @@ def login():
         # Kiểm tra từng người dùng để tìm user có username và password khớp
         for user in users:
             if user.get('username') == username and user.get('password') == password:
+
+                if update_user_status(user.get('id'), True):
                 # Lưu thông tin vào session sau khi xác thực thành công
-                session['user'] = user
-                # session['user_id'] = user.get('id')
-                # flash("Đăng nhập thành công!", "success")
-                return redirect(url_for('dashboard'))
+                    session['user'] = user
+                    return redirect(url_for('dashboard'))
         
         # Nếu không tìm thấy người dùng khớp, hiển thị thông báo lỗi
         flash("Tên đăng nhập hoặc mật khẩu không đúng!", "danger")
@@ -139,12 +139,17 @@ def register():
     
     return render_template('auth/register.html')
 
-
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    # flash("Bạn đã đăng xuất!", "info")
+    user = session.get('user')  # Lấy thông tin user từ session
+    if user:
+        # Gọi hàm cập nhật trạng thái offline
+        if update_user_status(user.get('id'), False):
+            # Xóa thông tin user khỏi session
+            session.pop('user', None)
+
     return redirect(url_for('login'))
+
 
 @app.route('/dashboard')
 # @login_required
