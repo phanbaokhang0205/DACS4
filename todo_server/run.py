@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
-from todo_server.server.index import App, Dashboard_Frame
+from call_api import *
+from server.index import App, Dashboard_Frame
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
@@ -405,28 +405,34 @@ def update_system_info(dashboard_frame):
 #=================================MAIN=======================================
 
 
-if __name__ == '__main__':
-    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'   # Thay thế bằng chuỗi bí mật của bạn
+# if __name__ == '__main__':
+#     app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'   # Thay thế bằng chuỗi bí mật của bạn
 
-    # Thiết lập thời gian session
-    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+#     # Thiết lập thời gian session
+#     # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
-    # app.run(debug=True)
-    # Chay flask server trong thread rieng
-    flask_thread = threading.Thread(target=lambda: app.run(debug=True,host=server_ip, port=5001, use_reloader=False))
-    flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
-    flask_thread.start()
+#     # app.run(debug=True)
+#     # Chay flask server trong thread rieng
+#     flask_thread = threading.Thread(target=lambda: app.run(debug=True,host=server_ip, port=5001, use_reloader=False))
+#     flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
+#     flask_thread.start()
 
     
 
-    # Khoi chay giao dien tkinter
-    server_ui = App(log_list=log_list)
+#     # Khoi chay giao dien tkinter
+#     server_ui = App(log_list=log_list)
 
-    #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
-    dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
-    update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
-    update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
-    update_thread.start()
+#     #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
+#     dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
+#     update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
+#     update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
+#     update_thread.start()
 
 
-    server_ui.mainloop()
+#     server_ui.mainloop()
+
+if __name__ == '__main__':
+    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'  # Đặt một secret key bí mật cho ứng dụng Flask
+
+    # Khởi chạy Flask server trên Heroku
+    app.run(debug=True, host='0.0.0.0', port=5000)
