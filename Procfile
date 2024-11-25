@@ -1,1 +1,1 @@
-web: gunicorn todo_server.run:app
+web: gunicorn run:app
