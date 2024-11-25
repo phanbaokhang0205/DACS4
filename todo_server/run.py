@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 # Check ng dùng đăng nhập
 # from functools import wraps
 
-
 app = Flask(__name__)
 
 def get_server_ip():
