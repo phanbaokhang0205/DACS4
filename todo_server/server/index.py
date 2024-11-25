@@ -263,7 +263,10 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         hosts = get_all_host()
         if not hosts:
             print("Không có dữ liệu để hiển thị.")
-            return
+            # Hiển thị thông báo lỗi lên frame để không bị trả về None
+            error_label = ctk.CTkLabel(frame, text="Không có dữ liệu để hiển thị.", text_color="red", font=("Arial", 18))
+            error_label.pack(pady=20)
+            return frame  # Trả về frame rỗng để tránh lỗi
 
         # Tính toán tỷ lệ tổng thể
         success_rate, fail_rate = self.calculate_overall_success_rate(hosts)
