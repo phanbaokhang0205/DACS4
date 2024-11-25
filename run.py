@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from call_api import *
-from server.index import App, Dashboard_Frame
+from todo_server.call_api import *
+from todo_server.server.index import App, Dashboard_Frame
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
