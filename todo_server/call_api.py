@@ -222,7 +222,7 @@ def getUsers():
             print(f"Số lượng online: {online_count}, offline: {offline_count}")
             return users  # Trả về danh sách người dùng
         else:
-            print(f"Không thể lấy dữ liệu: {response.status_code}")
+            print(f"Không thể lấy dữ liệu111: {response.status_code}")
             return []  # Trả về mảng rỗng nếu có lỗi
 
     except requests.exceptions.RequestException as e:
@@ -286,3 +286,76 @@ def get_system_info():
         print(f"Error occurred: {e}")
         return None
 
+# ======================= USER HOST =================================
+def get_all_host():
+    url = f'{BASE_URL}/user_host'
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu user_host: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+
+
+def get_host_by_ip(client_ip):
+    url = f'{BASE_URL}/user_host/{client_ip}'
+    try:
+        # Gửi yêu cầu GET đến API
+        response = requests.get(url)
+        
+        if response.status_code == 200:
+            return response.json() 
+        else:
+            print(f"Không thể lấy dữ liệu user_host: {response.status_code}")
+            return []
+
+    except requests.exceptions.RequestException as e:
+        print(f"Có lỗi xảy ra: {e}")
+        return []  # Trả về mảng rỗng nếu có lỗi
+    
+def addHost(client_ip, success, fail):
+    url = f'{BASE_URL}/user_host'
+    payload = {
+        "client_ip": client_ip,
+        "success": success,
+        "fail": fail,
+    }
+    print("Payload being sent:", payload)  # Thêm dòng log để kiểm tra payload
+
+    try:
+        # Gửi yêu cầu POST
+        response = requests.post(url, json=payload)
+        
+        if response.status_code == 201:
+            print("Host added successfully.")
+            return response.json()
+        else:
+            print(f"Failed to add Host: {response.status_code}")
+            return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+        return None 
+
+def update_request(client_ip, isSuccess):
+    url = f"{BASE_URL}/user_host/{client_ip}/status"
+    try:
+        response = requests.put(url, json={
+            'isSuccess': isSuccess,
+        })
+        if response.status_code == 200:
+            print(f"cập nhật trạng thái user_host thành công: {response.status_code}")
+            return True  # Thành công
+        else:
+            print(f"Không thể cập nhật trạng thái user_host: {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"Lỗi khi gọi API: {e}")
+        return False

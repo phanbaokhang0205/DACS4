@@ -259,13 +259,22 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
             self.task_statisCard = self.tasks_card(statis_frame, total_tasks, _done, _doing, _todo)
             self.task_statisCard.pack(fill='x', padx=(50,100), pady=10, side=ctk.RIGHT, expand=True, anchor=ctk.N)
 
+        # Lấy tất cả client_ip
+        hosts = get_all_host()
+        if not hosts:
+            print("Không có dữ liệu để hiển thị.")
+            return
+
+        # Tính toán tỷ lệ tổng thể
+        success_rate, fail_rate = self.calculate_overall_success_rate(hosts)
+
         # request rate
         request_frame = ctk.CTkFrame(frame, fg_color='transparent')
         request_frame.pack(fill='x', padx=150)
-        self.success_rate = self.request_rate(request_frame, "#6DFF9B", "Success Request", "server/icons/success.png", 12)
+        self.success_rate = self.request_rate(request_frame, "#6DFF9B", "Success Request", "server/icons/success.png", round(success_rate, 2))
         self.success_rate.pack(side=ctk.LEFT,  expand=False)
         
-        self.fail_rate = self.request_rate(request_frame, "#FF6D6D", "Fail Request", "server/icons/fail.png", 88)
+        self.fail_rate = self.request_rate(request_frame, "#FF6D6D", "Fail Request", "server/icons/fail.png", round(fail_rate, 2))
         self.fail_rate.pack( anchor=ctk.E)
 
         # Bảng dữ liệu clients
@@ -521,6 +530,19 @@ class Dashboard_Frame(ctk.CTkScrollableFrame):
         frame.pack(fill="both", expand=True, pady=10, padx=10)
 
         return frame
+
+# ============= request rate =========================
+    def calculate_overall_success_rate(self, hosts):
+        total_success = sum(host['success'] for host in hosts)
+        total_fail = sum(host['fail'] for host in hosts)
+        total_requests = total_success + total_fail
+
+        if total_requests == 0:
+            return 0, 0
+
+        success_rate = (total_success / total_requests) * 100
+        fail_rate = (total_fail / total_requests) * 100
+        return success_rate, fail_rate
 
 
     def request_rate(self, master, color, title, img, rate):

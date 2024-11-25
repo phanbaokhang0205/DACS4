@@ -82,7 +82,6 @@ def login():
         # Kiểm tra từng người dùng để tìm user có username và password khớp
         for user in users:
             if user.get('username') == username and user.get('password') == password:
-
                 if update_user_status(user.get('id'), True):
                 # Lưu thông tin vào session sau khi xác thực thành công
                     session['user'] = user
@@ -349,6 +348,45 @@ def handle_update_project():
         return redirect(url_for('projects', user=user))
     else:
         return redirect(url_for('login'))
+    
+#=================================USER HOST================================
+@app.before_request
+def track_client_request():
+    global client_ip
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    user_host = get_host_by_ip(client_ip)
+
+    if not user_host:
+        # Nếu chưa tồn tại, thêm bản ghi mới
+        new_host = addHost(client_ip, 0, 0)
+        if new_host:
+            print("New host added:", new_host)
+        else:
+            print("Failed to add new host")
+        return new_host
+    return user_host
+
+@app.after_request
+def update_request_status(response):
+    """
+    Cập nhật success hoặc fail dựa trên trạng thái của response.
+    """
+    global client_ip
+    status_code = response.status_code
+
+    if 200 <= status_code < 300:
+        # Thành công (2xx)
+        user_host = get_host_by_ip(client_ip)
+        if user_host:
+            update_request(client_ip, True)
+    else:
+        # Thất bại (không phải 2xx)
+        user_host = get_host_by_ip(client_ip)
+        if user_host:
+            update_request(client_ip, False)
+
+    return response
+
     
 #=================================SYSTEM INFO================================
 @app.route('/system_info', methods=['GET'])
