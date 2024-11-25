@@ -349,10 +349,7 @@ def handle_update_project():
         return redirect(url_for('login'))
     
 #=================================USER HOST================================
-@app.before_request
-def track_client_request():
-    global client_ip
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+def track_client(client_ip):
     user_host = get_host_by_ip(client_ip)
 
     if not user_host:
@@ -364,6 +361,12 @@ def track_client_request():
             print("Failed to add new host")
         return new_host
     return user_host
+
+@app.before_request
+def track_client_request():
+    global client_ip
+    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    track_client(client_ip)
 
 @app.after_request
 def update_request_status(response):
