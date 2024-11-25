@@ -85,7 +85,7 @@ def login():
                 if update_user_status(user.get('id'), True):
                 # Lưu thông tin vào session sau khi xác thực thành công
                     session['user'] = user
-                    return redirect(url_for('dashboard'))
+                    return redirect("/")
         
         # Nếu không tìm thấy người dùng khớp, hiển thị thông báo lỗi
         flash("Tên đăng nhập hoặc mật khẩu không đúng!", "danger")
@@ -130,7 +130,7 @@ def register():
             addUser(**data)
 
             flash("Đăng kí tài khoản thành công! Hãy đăng nhập nhé", "success")
-            return redirect(url_for('dashboard'))
+            return redirect("/")
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
@@ -150,7 +150,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/dashboard')
+@app.route('/')
 # @login_required
 def dashboard():
     if 'user' in session:
