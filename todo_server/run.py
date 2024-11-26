@@ -411,22 +411,21 @@ if __name__ == '__main__':
     # Thiết lập thời gian session
     # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
-    # app.run(debug=True)
     # Chay flask server trong thread rieng
     flask_thread = threading.Thread(target=lambda: app.run(debug=True,host=server_ip, port=5001, use_reloader=False))
     flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
     flask_thread.start()
 
-    
+    app.run(debug=True,host=server_ip, port=5001, use_reloader=False)
 
-    # Khoi chay giao dien tkinter
-    server_ui = App(log_list=log_list)
+  # Khoi chay giao dien tkinter
+    # server_ui = App(log_list=log_list)
 
-    #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
-    dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
-    update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
-    update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
-    update_thread.start()
+    # # #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
+    # dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
+    # update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
+    # update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
+    # update_thread.start()
 
 
-    server_ui.mainloop()
+    # server_ui.mainloop()
