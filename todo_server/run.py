@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import socket, threading, time
 from datetime import datetime
 from call_api import *
-from server.index import App, Dashboard_Frame
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
@@ -52,6 +51,26 @@ def log_request_info(response):
     log_list.append(log_entry)
     
     return response
+
+# API để lấy log
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    return jsonify(log_list), 200
+
+@app.route('/api/logs/search', methods=['GET'])
+def search_logs():
+    kw = request.args.get('kw', '').lower()  # Từ khóa lấy từ query parameter
+    print(f"Keyword received: {kw}")  # Debug từ khóa nhận được
+    if not kw:
+        return jsonify({"message": "Please provide a search keyword."}), 400
+
+    filtered_logs = [log for log in log_list if kw in log.lower()]
+    print(f"Filtered logs: {filtered_logs}")  # Debug kết quả lọc
+
+    if not filtered_logs:
+        return jsonify({"message": "No logs found for the given keyword."}), 404
+
+    return jsonify({"logs": filtered_logs}), 200
 
 
 # ================================= Define route =================================
@@ -394,12 +413,6 @@ def system_info():
     info = get_system_info()
     return jsonify(info)
 
-def update_system_info(dashboard_frame):
-    while True:
-        system_info = get_system_info()  # Lấy thông tin từ API hoặc hệ thống
-        if system_info:
-            dashboard_frame.update_dashboard(system_info)  # Cập nhật giao diện
-        time.sleep(0.)  # Dừng 1 giây trước khi cập nhật tiếp
 #=================================MAIN=======================================
 
 
@@ -415,15 +428,3 @@ if __name__ == '__main__':
     flask_thread.start()
 
     app.run(debug=True,host=server_ip, port=5001, use_reloader=False)
-
-  # Khoi chay giao dien tkinter
-    # server_ui = App(log_list=log_list)
-
-    # # #  Khởi tạo và chạy thread cập nhật thông tin hệ thống
-    # dashboard_frame = server_ui.body.frames["dashboard"]  # Truy cập Dashboard_Frame từ App
-    # update_thread = threading.Thread(target=update_system_info, args=(dashboard_frame,))
-    # update_thread.daemon = True  # Đảm bảo thread dừng khi ứng dụng tắt
-    # update_thread.start()
-
-
-    # server_ui.mainloop()
