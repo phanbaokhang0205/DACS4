@@ -17,7 +17,6 @@ def get_server_ip():
 
 server_ip = get_server_ip()
 
-
 log_list=[]
 
 def format_date(date_string):
@@ -90,7 +89,6 @@ def login():
         flash("Tên đăng nhập hoặc mật khẩu không đúng!", "danger")
     
     return render_template('auth/login.html')
-
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -172,7 +170,6 @@ def dashboard():
         return redirect(url_for('login'))
     
 #==========================TASK===============================
-
 @app.route('/tasks', methods=['GET', 'POST'])
 # @login_required
 def tasks():
@@ -265,6 +262,7 @@ def handle_update_task():
         return redirect(url_for('tasks', user=user))
     else:
         return redirect(url_for('login'))
+    
     
 #===========================PROJECT================================
 @app.route('/projects', methods=['GET', 'POST'])
