@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com"
+BASE_URL = "http://127.0.0.1:5000/"
 # =================================Call api =================================
 # ======================= TASK =================================
 def getTasks():
