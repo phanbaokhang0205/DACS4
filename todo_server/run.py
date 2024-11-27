@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from call_api import *
+from todo_server.call_api import *
 from datetime import datetime, timedelta
+import os
 
 # Check ng dùng đăng nhập
 # from functools import wraps
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 # def get_server_ip():
 #     hostname = socket.gethostname() 
@@ -434,11 +436,11 @@ def system_info():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'
+    # app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'
 
     # Chay flask server trong thread rieng
     # flask_thread = threading.Thread(target=lambda: app.run(debug=True,host='0.0.0.0', port=5001, use_reloader=False))
     # flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
     # flask_thread.start()
 
-    app.run(debug=True,host='0.0.0.0', port=5001, use_reloader=False)
+    app.run(debug=True,host='0.0.0.0', port=int(os.environ.get('PORT', 5001)))
