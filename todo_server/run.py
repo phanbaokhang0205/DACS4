@@ -126,6 +126,9 @@ def register():
             avatar = request.form.get('avatar')
             create_at = datetime.now().isoformat()
 
+             # Chuyển đổi định dạng ngày tháng
+            create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+
              # Kiểm tra nếu password và password_again khớp
             if password != password_again:
                 flash("Mật khẩu và xác nhận mật khẩu không khớp!", "danger")
@@ -143,6 +146,7 @@ def register():
                 "avatar": avatar,
                 "create_at": create_at,
             }
+            
             addUser(**data)
 
             flash("Đăng kí tài khoản thành công! Hãy đăng nhập nhé", "success")
@@ -206,6 +210,10 @@ def tasks():
                 begin_day = request.form.get('beginDay')
                 due_day = request.form.get('dueDay')
                 priority = request.form.get('priority')
+
+                # Chuyển đổi định dạng ngày tháng
+                begin_day = datetime.strptime(begin_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                due_day = datetime.strptime(due_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
                 data = {
                     "user_id": user_id,
@@ -290,6 +298,7 @@ def projects():
     if 'user' in session:
         user = session['user']
         user_id = user.get('id')
+        
         if request.method == 'POST':
             try:    
                 user_id = user_id
@@ -298,6 +307,9 @@ def projects():
                 created_at = request.form.get('created_at')
                 updated_at = request.form.get('updated_at')
 
+                # Chuyển đổi định dạng ngày tháng
+                created_at = datetime.strptime(created_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                updated_at = datetime.strptime(updated_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
                 data = {
                     "user_id": user_id,
                     "name": name,
@@ -305,12 +317,14 @@ def projects():
                     "created_at": created_at,
                     "updated_at": updated_at
                 }
+                print(f"===========================: {created_at}, {updated_at}")
                 addProject(**data)
 
                 print("Dữ liệu đã được xử lý thành công!", "success")
                 return redirect(url_for('projects'))
             except Exception as e:
                 # Xử lý lỗi, ghi log và thông báo cho người dùng
+                print(f"===========================: {created_at}, {updated_at}")
                 print(f"Đã xảy ra lỗi: {e}")
                 print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
         else:
@@ -370,8 +384,11 @@ def track_client(client_ip):
     user_host = get_host_by_ip(client_ip)
 
     if not user_host:
+        created_at = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        updated_at = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
         # Nếu chưa tồn tại, thêm bản ghi mới
-        new_host = addHost(client_ip, 0, 0)
+        new_host = addHost(client_ip, 0, 0, created_at, updated_at)
         if new_host:
             print("New host added:", new_host)
         else:
