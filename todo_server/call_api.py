@@ -320,12 +320,14 @@ def get_host_by_ip(client_ip):
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
     
-def addHost(client_ip, success, fail):
+def addHost(client_ip, success, fail, created_at, updated_at):
     url = f'{BASE_URL}/user_host'
     payload = {
         "client_ip": client_ip,
         "success": success,
         "fail": fail,
+        "created_at": created_at,
+        "updated_at": updated_at
     }
     print("Payload being sent:", payload)  # Thêm dòng log để kiểm tra payload
 
