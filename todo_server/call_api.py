@@ -248,6 +248,7 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
     # Gui yeu cau post
     try:
         response = requests.post(url, json=payload)
+        print(payload)
         if response.status_code == 201:
             print("User register successfully.")
             return response.json()

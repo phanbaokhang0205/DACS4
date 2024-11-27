@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -150,9 +150,10 @@ def register():
             }
             
             addUser(**data)
+            print(data)
 
             flash("Đăng kí tài khoản thành công! Hãy đăng nhập nhé", "success")
-            return redirect("/")
+            return redirect(url_for('login'))
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
