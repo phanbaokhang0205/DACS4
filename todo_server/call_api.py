@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+BASE_URL = "http://127.0.0.1:5000"
 # =================================Call api =================================
 # ======================= TASK =================================
 def getTasks():
@@ -231,7 +231,7 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
-    url = 'https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/users'
+    url = 'http://127.0.0.1:5000/users'
     payload = {
         "fullname": fullname,
         "age": age,
@@ -245,6 +245,7 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
         "create_at": create_at
     }
     
+    print(payload)
     # Gui yeu cau post
     try:
         response = requests.post(url, json=payload)
@@ -255,10 +256,10 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
         else:
             print(f"Failed to register: {response.status_code}")
             return response.json()
-
     except requests.exceptions.RequestException as e:
             print(f"Error occurred: {e}")
             return None
+    
 
 def update_user_status(user_id, is_online):
     url = f"{BASE_URL}/users/{user_id}/status"

@@ -41,7 +41,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = "https://flask-webserver-e07c23893a36.herokuapp.com/"
+    server_ip = "http://127.0.0.1:5000"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -385,11 +385,11 @@ def handle_update_project():
 #=================================USER HOST================================
 def track_client(client_ip):
     user_host = get_host_by_ip(client_ip)
+    # Tạo thời gian theo định dạng đúng
+    now = datetime.now()
+    created_at = updated_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
     if not user_host:
-        created_at = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
-        updated_at = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
         # Nếu chưa tồn tại, thêm bản ghi mới
         new_host = addHost(client_ip, 0, 0, created_at, updated_at)
         if new_host:
