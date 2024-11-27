@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 
 # Check ng dùng đăng nhập
@@ -9,12 +9,12 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-def get_server_ip():
-    hostname = socket.gethostname() 
-    server_ip = socket.gethostbyname(hostname)
-    return server_ip
+# def get_server_ip():
+#     hostname = socket.gethostname() 
+#     server_ip = socket.gethostbyname(hostname)
+#     return server_ip
 
-server_ip = get_server_ip()
+# server_ip = get_server_ip()
 
 log_list=[]
 
@@ -39,7 +39,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = get_server_ip()
+    server_ip = "https://flask-webserver-e07c23893a36.herokuapp.com/"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -434,14 +434,11 @@ def system_info():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'   # Thay thế bằng chuỗi bí mật của bạn
-
-    # Thiết lập thời gian session
-    # app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    app.secret_key = 'levanquochuykhangbaokhang2024chungtoideptraivailin'
 
     # Chay flask server trong thread rieng
-    flask_thread = threading.Thread(target=lambda: app.run(debug=True,host=server_ip, port=5001, use_reloader=False))
-    flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
-    flask_thread.start()
+    # flask_thread = threading.Thread(target=lambda: app.run(debug=True,host='0.0.0.0', port=5001, use_reloader=False))
+    # flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
+    # flask_thread.start()
 
-    app.run(debug=True,host=server_ip, port=5001, use_reloader=False)
+    app.run(debug=True,host='0.0.0.0', port=5001, use_reloader=False)
