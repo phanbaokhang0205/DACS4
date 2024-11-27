@@ -114,6 +114,8 @@ def login():
 def register():
     if request.method == 'POST':
         try:
+            now = datetime.now()
+            
             fullname = request.form.get('fullname')
             age = request.form.get('age')
             gender = request.form.get('gender')
@@ -124,10 +126,11 @@ def register():
             password = request.form.get('password')
             password_again = request.form.get('pass_again')
             avatar = request.form.get('avatar')
-            create_at = datetime.now().isoformat()
+            # create_at = datetime.now().isoformat()
+            create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
              # Chuyển đổi định dạng ngày tháng
-            create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+            # create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
              # Kiểm tra nếu password và password_again khớp
             if password != password_again:
