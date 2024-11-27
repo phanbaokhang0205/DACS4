@@ -1,6 +1,7 @@
 import requests
 
-BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com"
+
 # =================================Call api =================================
 # ======================= TASK =================================
 def getTasks():
@@ -231,7 +232,7 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
-    url = 'http://127.0.0.1:5000/users'
+    url = 'https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/users'
     payload = {
         "fullname": fullname,
         "age": age,
@@ -244,8 +245,6 @@ def addUser(fullname, age, gender, phone, address, email, username, password, av
         "avatar": avatar,
         "create_at": create_at
     }
-    
-    print(payload)
     # Gui yeu cau post
     try:
         response = requests.post(url, json=payload)
