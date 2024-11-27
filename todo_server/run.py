@@ -5,6 +5,8 @@ from todo_server.call_api import *
 from datetime import datetime, timedelta
 import os
 
+from werkzeug.security import generate_password_hash
+
 # Check ng dùng đăng nhập
 # from functools import wraps
 
@@ -131,10 +133,12 @@ def register():
             # create_at = datetime.now().isoformat()
             create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-             # Chuyển đổi định dạng ngày tháng
+            # Chuyển đổi định dạng ngày tháng
             # create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-             # Kiểm tra nếu password và password_again khớp
+            hashed_password = generate_password_hash(password)
+
+            # Kiểm tra nếu password và password_again khớp
             if password != password_again:
                 flash("Mật khẩu và xác nhận mật khẩu không khớp!", "danger")
                 return redirect(url_for('register'))
@@ -147,7 +151,7 @@ def register():
                 "address": address,
                 "email": email,
                 "username": username,
-                "password": password,
+                "password": hashed_password,
                 "avatar": avatar,
                 "create_at": create_at,
             }
