@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
 from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
 
 # Check ng dùng đăng nhập
 # from functools import wraps
@@ -43,7 +44,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com"
+    server_ip = "http://127.0.0.1:5000/"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -102,15 +103,17 @@ def login():
         
         # Kiểm tra từng người dùng để tìm user có username và password khớp
         for user in users:
-            if user.get('username') == username and user.get('password') == password:
-                if update_user_status(user.get('id'), True):
-                # Lưu thông tin vào session sau khi xác thực thành công
-                    session['user'] = user
-                    return redirect("/")
-        
-        # Nếu không tìm thấy người dùng khớp, hiển thị thông báo lỗi
-        flash("Tên đăng nhập hoặc mật khẩu không đúng!", "danger")
-    
+            if user.get('username') == username:
+                if check_password_hash(user.get('password'), password):
+                    if update_user_status(user.get('id'), True):
+                    # Lưu thông tin vào session sau khi xác thực thành công
+                        session['user'] = user
+                        return redirect("/")
+
+                else:
+                    flash("Mật khẩu không đúng!", "danger")
+                
+        flash("Tên đăng nhập không tồn tại", "danger")
     return render_template('auth/login.html')
 
 
