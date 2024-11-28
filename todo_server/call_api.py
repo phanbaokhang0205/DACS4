@@ -36,7 +36,7 @@ def getTaskByUserId(user_id):
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
     
-def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority):
+def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority, attachment):
     url = f'{BASE_URL}/tasks'
     payload = {
         "user_id": user_id,
@@ -46,7 +46,8 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
         "status": status,
         "begin_day": begin_day,
         "due_day": due_day,
-        "priority": priority
+        "priority": priority,
+        "attachment": attachment
     }
 
     try:

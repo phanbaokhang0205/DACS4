@@ -8,6 +8,9 @@ import os
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
+# upload file
+from werkzeug.utils import secure_filename
+
 # Check ng dùng đăng nhập
 # from functools import wraps
 
@@ -22,6 +25,10 @@ app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 # server_ip = get_server_ip()
 
 log_list=[]
+
+# Upload file
+UPLOAD_FOLDER = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def format_date(date_string):
     # Giả sử date_string có định dạng Thu, 28 Nov 2024 00:00:00 GMT
@@ -44,7 +51,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = "http://127.0.0.1:5000/"
+    server_ip = "http://127.0.0.1:5000"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -223,6 +230,15 @@ def tasks():
                 begin_day = request.form.get('beginDay')
                 due_day = request.form.get('dueDay')
                 priority = request.form.get('priority')
+                file = request.files.get('attachment') # Nhận fileee
+
+                # Xử lí file upload (Nếu có)
+                attachment_path = None
+                if file:
+                    filename = secure_filename(file.filename)
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(file_path)
+                    attachment_path = file_path # Duong dan luu filee
 
                 # Chuyển đổi định dạng ngày tháng
                 begin_day = datetime.strptime(begin_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
@@ -236,7 +252,8 @@ def tasks():
                     "status": status,
                     "begin_day": begin_day,
                     "due_day": due_day,
-                    "priority": priority
+                    "priority": priority,
+                    "attachment": attachment_path
                 }
                 addTask(**data)
 
