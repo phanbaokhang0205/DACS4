@@ -1,6 +1,6 @@
 import requests
 
-BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+BASE_URL = "http://127.0.0.1:5000/"
 
 # =================================Call api =================================
 # ======================= TASK =================================
@@ -35,9 +35,12 @@ def getTaskByUserId(user_id):
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
         return []  # Trả về mảng rỗng nếu có lỗi
-    
-def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority, attachment):
+
+
+def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority):
     url = f'{BASE_URL}/tasks'
+    
+    # Tạo payload cho các dữ liệu còn lại
     payload = {
         "user_id": user_id,
         "project_id": project_id,
@@ -46,24 +49,25 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
         "status": status,
         "begin_day": begin_day,
         "due_day": due_day,
-        "priority": priority,
-        "attachment": attachment
+        "priority": priority
     }
 
     try:
-        # Gửi yêu cầu POST
-        response = requests.post(url, json=payload)
+        # Gửi yêu cầu POST với multipart/form-data (cho file)
+        response = requests.post(url, data=payload)
         
         if response.status_code == 201:
             print("Task added successfully.")
             return response.json()
         else:
-            print(f"Failed to add task: {response.status_code}")
+            print(f"Failed to add task: {response.status_code}, {response.text}")
             return response.json()
 
     except requests.exceptions.RequestException as e:
         print(f"Error occurred: {e}")
         return None
+
+
 
 def getTaskBySearching(user_id, keywords):
     # Thêm user_id vào URL
@@ -233,7 +237,7 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
-    url = 'https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/'
+    url = 'http://127.0.0.1:5000/users'
     payload = {
         "fullname": fullname,
         "age": age,

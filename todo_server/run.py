@@ -1,18 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
-# upload file
-from werkzeug.utils import secure_filename
-
-# Check ng dùng đăng nhập
-# from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
@@ -26,9 +21,6 @@ app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 log_list=[]
 
-# Upload file
-UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def format_date(date_string):
     # Giả sử date_string có định dạng Thu, 28 Nov 2024 00:00:00 GMT
@@ -51,7 +43,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    server_ip = "http://127.0.0.1:5000"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -212,6 +204,7 @@ def dashboard():
     else:
         return redirect(url_for('login'))
     
+    
 #==========================TASK===============================
 @app.route('/tasks', methods=['GET', 'POST'])
 # @login_required
@@ -220,9 +213,9 @@ def tasks():
         user = session['user']
         user_id = user.get('id')
         projects = getProjectByUserId(user_id)
+        
         if request.method == 'POST':
             try:    
-                user_id = user_id
                 project_id = request.form.get('project_id')
                 title = request.form.get('title')
                 description = request.form.get('description')
@@ -230,20 +223,12 @@ def tasks():
                 begin_day = request.form.get('beginDay')
                 due_day = request.form.get('dueDay')
                 priority = request.form.get('priority')
-                file = request.files.get('attachment') # Nhận fileee
-
-                # Xử lí file upload (Nếu có)
-                attachment_path = None
-                if file:
-                    filename = secure_filename(file.filename)
-                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                    file.save(file_path)
-                    attachment_path = file_path # Duong dan luu filee
 
                 # Chuyển đổi định dạng ngày tháng
                 begin_day = datetime.strptime(begin_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
                 due_day = datetime.strptime(due_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
+                # Tạo payload cho API
                 data = {
                     "user_id": user_id,
                     "project_id": project_id,
@@ -253,25 +238,34 @@ def tasks():
                     "begin_day": begin_day,
                     "due_day": due_day,
                     "priority": priority,
-                    "attachment": attachment_path
                 }
-                addTask(**data)
 
-                print("Dữ liệu đã được xử lý thành công!", "success")
+                # Gửi yêu cầu POST tới API
+                response = requests.post(f'{BASE_URL}/tasks', data=data)
+
+                if response.status_code == 201:
+                    print("Task added successfully.")
+                else:
+                    print(f"Failed to add task: {response.status_code}, {response.text}")
+
                 return redirect(url_for('tasks'))
+
             except Exception as e:
-                # Xử lý lỗi, ghi log và thông báo cho người dùng
                 print(f"Đã xảy ra lỗi: {e}")
-                print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
+                return redirect(url_for('tasks'))
+        
         else:
             title = request.args.get('search')
             if title:
                 tasks = getTaskBySearching(user_id, title)
             else:
                 tasks = getTaskByUserId(user_id)
-        return render_template('tasks.html', projects=projects, tasks = tasks, user = user)
+        
+        return render_template('tasks.html', projects=projects, tasks=tasks, user=user)
+    
     else:
         return redirect(url_for('login'))
+
 
 
 @app.route('/delete_task', methods=['POST'])
