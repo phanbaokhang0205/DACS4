@@ -59,7 +59,7 @@
 						<span>{{ user['fullname'] }}</span>
 					</a>
 					<div class="dropdown-menu">
-						<a class="dropdown-item" href="profile.html"><i data-feather="user" class="mr-1"></i>
+						<a class="dropdown-item" href="{{ url_for('profile') }}"><i data-feather="user" class="mr-1"></i>
 							Profile</a>
 						<a class="dropdown-item" href="{{ url_for('logout')}}" onclick="return confirmLogout(event)"><i data-feather="log-out" class="mr-1"></i>
 							Logout</a>
@@ -131,7 +131,7 @@
 							</li> -->
 							
 							<li>
-								<a href="profile.html"><img src="../static/assets/img/profile.svg" alt="sidebar_img">
+								<a href="{{ url_for('profile')}}"><img src="../static/assets/img/profile.svg" alt="sidebar_img">
 									<span>Profile</span></a>
 							</li>
 						</ul>
