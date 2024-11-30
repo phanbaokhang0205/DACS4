@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
-import socket, threading, time
+import socket
+import threading
+import time
 from datetime import datetime
 from call_api import *
 from datetime import datetime, timedelta
@@ -13,19 +15,20 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 # def get_server_ip():
-#     hostname = socket.gethostname() 
+#     hostname = socket.gethostname()
 #     server_ip = socket.gethostbyname(hostname)
 #     return server_ip
 
 # server_ip = get_server_ip()
 
-log_list=[]
+log_list = []
 
 
 def format_date(date_string):
     # Giả sử date_string có định dạng Thu, 28 Nov 2024 00:00:00 GMT
     date_object = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %Z')
     return date_object.strftime('%Y-%m-%d')
+
 
 @app.template_filter('format_date')
 def format_date(date_string):
@@ -34,6 +37,8 @@ def format_date(date_string):
 
 # Hàm log request vào log_list
 # Log request thông tin sau khi xử lý request
+
+
 @app.after_request
 def log_request_info(response):
     # Lấy thời gian hiện tại
@@ -41,25 +46,28 @@ def log_request_info(response):
 
     # Lấy địa chỉ IP của client, kiểm tra header 'X-Forwarded-For' nếu có
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    
+
     # Lấy địa chỉ IP của server
     server_ip = "http://127.0.0.1:5000"
-    
+
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
-    
+
     # Lấy mã trạng thái HTTP (200, 404, ...)
     status = response.status
-    
+
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
     log_list.append(log_entry)
-    
+
     return response
 
 # API để lấy log
+
+
 @app.route('/api/logs', methods=['GET'])
 def get_logs():
     return jsonify(log_list), 200
+
 
 @app.route('/api/logs/search', methods=['GET'])
 def search_logs():
@@ -96,25 +104,26 @@ def login():
     if request.method == 'POST':
         username = request.form.get('user_username')
         password = request.form.get('user_password')
-        
+
         # Lấy danh sách người dùng
         users = getUsers()
-        
+
         # Kiểm tra từng người dùng để tìm user có username và password khớp
         for user in users:
             if user.get('username') == username:
                 if user.get('isActive') == False:
-                    flash("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!", "danger")
+                    flash(
+                        "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!", "danger")
                 else:
                     if check_password_hash(user.get('password'), password):
                         if update_user_status(user.get('id'), True):
-                        # Lưu thông tin vào session sau khi xác thực thành công
+                            # Lưu thông tin vào session sau khi xác thực thành công
                             session['user'] = user
                             return redirect("/")
 
                     else:
                         flash("Mật khẩu không đúng!", "danger")
-                
+
         flash("Tên đăng nhập không tồn tại", "danger")
     return render_template('auth/login.html')
 
@@ -124,7 +133,7 @@ def register():
     if request.method == 'POST':
         try:
             now = datetime.now()
-            
+
             fullname = request.form.get('fullname')
             age = request.form.get('age')
             gender = request.form.get('gender')
@@ -160,7 +169,7 @@ def register():
                 "avatar": avatar,
                 "create_at": create_at,
             }
-            
+
             addUser(**data)
             print(data)
 
@@ -170,8 +179,9 @@ def register():
             # Xử lý lỗi, ghi log và thông báo cho người dùng
             print(f"Đã xảy ra lỗi: {e}")
             print(f"Đã xảy ra lỗi trong quá trình xử lý!", "danger")
-    
+
     return render_template('auth/register.html')
+
 
 @app.route('/logout')
 def logout():
@@ -195,20 +205,22 @@ def dashboard():
         project_count = len(getProjectByUserId(user_id))
         task_count = len(getTaskByUserId(user_id))
         done_count = sum(1 for task in tasks if task['status'] == 'COMPLETED')
-        doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
+        doing_count = sum(
+            1 for task in tasks if task['status'] == 'IN_PROGRESS')
         todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
-        recent_tasks = sorted(tasks, key=lambda x: x['due_day'], reverse=True)[:3]
+        recent_tasks = sorted(
+            tasks, key=lambda x: x['due_day'], reverse=True)[:3]
 
         return render_template('dashboard.html',
-            user = user, project_count = project_count, 
-            task_count = task_count, done_count = done_count, 
-            doing_count = doing_count, todo_count = todo_count, recent_tasks = recent_tasks
-        )
+                               user=user, project_count=project_count,
+                               task_count=task_count, done_count=done_count,
+                               doing_count=doing_count, todo_count=todo_count, recent_tasks=recent_tasks
+                               )
     else:
         return redirect(url_for('login'))
-    
-    
-#==========================TASK===============================
+
+
+# ==========================TASK===============================
 @app.route('/tasks', methods=['GET', 'POST'])
 # @login_required
 def tasks():
@@ -216,9 +228,9 @@ def tasks():
         user = session['user']
         user_id = user.get('id')
         projects = getProjectByUserId(user_id)
-        
+
         if request.method == 'POST':
-            try:    
+            try:
                 project_id = request.form.get('project_id')
                 title = request.form.get('title')
                 description = request.form.get('description')
@@ -228,8 +240,10 @@ def tasks():
                 priority = request.form.get('priority')
 
                 # Chuyển đổi định dạng ngày tháng
-                begin_day = datetime.strptime(begin_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
-                due_day = datetime.strptime(due_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                begin_day = datetime.strptime(
+                    begin_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                due_day = datetime.strptime(
+                    due_day, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
                 # Tạo payload cho API
                 data = {
@@ -249,26 +263,26 @@ def tasks():
                 if response.status_code == 201:
                     print("Task added successfully.")
                 else:
-                    print(f"Failed to add task: {response.status_code}, {response.text}")
+                    print(
+                        f"Failed to add task: {response.status_code}, {response.text}")
 
                 return redirect(url_for('tasks'))
 
             except Exception as e:
                 print(f"Đã xảy ra lỗi: {e}")
                 return redirect(url_for('tasks'))
-        
+
         else:
             title = request.args.get('search')
             if title:
                 tasks = getTaskBySearching(user_id, title)
             else:
                 tasks = getTaskByUserId(user_id)
-        
+
         return render_template('tasks.html', projects=projects, tasks=tasks, user=user)
-    
+
     else:
         return redirect(url_for('login'))
-
 
 
 @app.route('/delete_task', methods=['POST'])
@@ -285,6 +299,7 @@ def handle_delete_task():
         return redirect(url_for('tasks', user=user))
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/update_task', methods=['POST'])
 def handle_update_task():
@@ -307,7 +322,7 @@ def handle_update_task():
             "begin_day": begin_day,
             "due_day": due_day
         }
-        
+
         result = update_task(task_id, data=data)
         if 'successfully' in result:
             print(result, 'success')
@@ -316,18 +331,18 @@ def handle_update_task():
         return redirect(url_for('tasks', user=user))
     else:
         return redirect(url_for('login'))
-    
-    
-#===========================PROJECT================================
+
+
+# ===========================PROJECT================================
 @app.route('/projects', methods=['GET', 'POST'])
 # @login_required
 def projects():
     if 'user' in session:
         user = session['user']
         user_id = user.get('id')
-        
+
         if request.method == 'POST':
-            try:    
+            try:
                 user_id = user_id
                 name = request.form.get('name')
                 description = request.form.get('description')
@@ -335,8 +350,10 @@ def projects():
                 updated_at = request.form.get('updated_at')
 
                 # Chuyển đổi định dạng ngày tháng
-                created_at = datetime.strptime(created_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
-                updated_at = datetime.strptime(updated_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                created_at = datetime.strptime(
+                    created_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
+                updated_at = datetime.strptime(
+                    updated_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
                 data = {
                     "user_id": user_id,
                     "name": name,
@@ -344,14 +361,16 @@ def projects():
                     "created_at": created_at,
                     "updated_at": updated_at
                 }
-                print(f"===========================: {created_at}, {updated_at}")
+                print(
+                    f"===========================: {created_at}, {updated_at}")
                 addProject(**data)
 
                 print("Dữ liệu đã được xử lý thành công!", "success")
                 return redirect(url_for('projects'))
             except Exception as e:
                 # Xử lý lỗi, ghi log và thông báo cho người dùng
-                print(f"===========================: {created_at}, {updated_at}")
+                print(
+                    f"===========================: {created_at}, {updated_at}")
                 print(f"Đã xảy ra lỗi: {e}")
                 print(f"Đã xảy ra lỗi trong quá trình xử lý: {e}", "error")
         else:
@@ -360,10 +379,11 @@ def projects():
                 projects = getProjectBySearching(user_id, name)
             else:
                 projects = getProjectByUserId(user_id)
-        return render_template('project.html', projects=projects, user = user)
+        return render_template('project.html', projects=projects, user=user)
     else:
         return redirect(url_for('login'))
-    
+
+
 @app.route('/delete_project', methods=['POST'])
 def handle_delete_project():
     if 'user' in session:
@@ -378,6 +398,7 @@ def handle_delete_project():
         return redirect(url_for('projects', user=user))
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/update_project', methods=['POST'])
 def handle_update_project():
@@ -396,7 +417,7 @@ def handle_update_project():
             "created_at": created_at,
             "updated_at": updated_at,
         }
-        
+
         result = update_project(project_id, data=data)
         if 'successfully' in result:
             print(result, 'success')
@@ -405,17 +426,101 @@ def handle_update_project():
         return redirect(url_for('projects', user=user))
     else:
         return redirect(url_for('login'))
-    
+
+
 @app.route("/profile", methods=['GET'])
 def profile():
-    user = getUsers()
-    return render_template("profile.html", user = user)
+
+    if 'user' in session:
+        user = session['user']
+        # user_id = user.get('id')
+
+        return render_template("profile.html", user=user)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/update_user', methods=['POST'])
+def handle_update_user():
+    if 'user' in session:
+        user = session['user']
+        user_id = user.get('id')
+
+        fullname = request.form.get('fullname')
+        username = request.form.get('username')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        avatar = request.form.get('avatar')
+
+        data = {
+            "fullname": fullname,
+            "username": username,
+            "address": address,
+            "phone": phone,
+            "avatar": avatar,
+            "age": 12,
+            "create_at": user.get('create_at'),
+            "email": user.get('email'),
+            "gender": user.get('gender'),
+            "isActive": user.get('isActive'),
+            "isOnline": user.get('isOnline'),
+            "password": user.get('password'),
+        }
+
+        result = update_user(user_id, data=data)
+        if 'successfully' in result:
+            # Sau khi cập nhật, lấy lại thông tin mới nhất từ server
+            updated_user = get_user_by_id(user_id)  # Hàm này gọi API hoặc truy vấn database để lấy thông tin mới
+            session['user'] = updated_user  # Cập nhật lại thông tin trong session
+            print(result, 'success')
+        else:
+            print(result, 'error')
+        return redirect(url_for('profile', user=user))
+    else:
+        return redirect(url_for('login'))
+
 
 @app.route("/profile_timeoff", methods=['GET'])
 def profile_timeoff():
-    user = getUsers()
-    return render_template("profile2.html", user = user)
-#=================================USER HOST================================
+    if 'user' in session:
+        user = session['user']
+        user_id = user.get('id')
+        user_created = user.get('create_at')
+
+        project_count = len(getProjectByUserId(user_id))
+        latest_project = max(getProjectByUserId(user_id),
+                             key=lambda x: x['created_at'])
+
+        tasks = getTaskByUserId(user_id)
+        high = [task for task in tasks if task['priority'] == 'HIGH']
+        medium = [task for task in tasks if task['priority'] == 'MEDIUM']
+        low = [task for task in tasks if task['priority'] == 'LOW']
+
+        # Chuyển đổi chuỗi thành đối tượng datetime
+        created_datetime = datetime.strptime(
+            user_created, "%a, %d %b %Y %H:%M:%S %Z")
+        now = datetime.now()  # Hoặc sử dụng datetime.now() nếu muốn theo giờ địa phương
+
+        # Lấy ngày và tháng
+        day = created_datetime.day
+        month = created_datetime.strftime("%B")
+        year = created_datetime.year
+        date = f" {month} {day}, {year}"
+
+        # Tính ngày tham gia
+        joined = now.day - created_datetime.day
+        joined = "Just today." if joined <= 0 else joined
+
+        return render_template("profile2.html",
+                               user=user, pc=project_count,
+                               lp=latest_project, date=date,
+                               joined=joined, h=high, m=medium, l=low)
+    else:
+        return redirect(url_for('login'))
+
+# =================================USER HOST================================
+
+
 def track_client(client_ip):
     user_host = get_host_by_ip(client_ip)
     # Tạo thời gian theo định dạng đúng
@@ -432,11 +537,13 @@ def track_client(client_ip):
         return new_host
     return user_host
 
+
 @app.before_request
 def track_client_request():
     global client_ip
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     track_client(client_ip)
+
 
 @app.after_request
 def update_request_status(response):
@@ -459,14 +566,14 @@ def update_request_status(response):
 
     return response
 
-    
-#=================================SYSTEM INFO================================
+
+# =================================SYSTEM INFO================================
 @app.route('/system_info', methods=['GET'])
 def system_info():
     info = get_system_info()
     return jsonify(info)
 
-#=================================MAIN=======================================
+# =================================MAIN=======================================
 
 
 if __name__ == '__main__':
@@ -477,4 +584,4 @@ if __name__ == '__main__':
     # flask_thread.daemon = True # De khi thoat Tkinter, Flask cung tu tat
     # flask_thread.start()
 
-    app.run(debug=True,host='0.0.0.0', port=int(os.environ.get('PORT', 5001)))
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5001)))
