@@ -107,10 +107,10 @@ def login():
                             # Lưu thông tin vào session sau khi xác thực thành công
                             session['user'] = user
                             return redirect("/")
-
                     else:
                         flash("Mật khẩu không đúng!", "danger")
-        flash("Tên đăng nhập không tồn tại", "danger")
+            else:
+                flash("Tên đăng nhập không tồn tại", "danger")
     return render_template('auth/login.html')
 
 
