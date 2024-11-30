@@ -3048,19 +3048,19 @@ html.menu-opened body {
 :root {
   --primary-color: #f90a39;
   --text-color: #1d1d1d;
-  --bg-color: #f1f1fb;
+  --bg-color: #c4edfb;
 }
 .calendar_container {
   width: 100%;
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .calendar {
   width: 100%;
-  max-width: 600px;
-  padding: 30px 20px;
+  max-width: 800px;
+  padding: 35px 20px;
   border-radius: 10px;
   background-color: var(--bg-color);
 }
@@ -3109,7 +3109,7 @@ html.menu-opened body {
   width: calc(100% / 7 - 10px);
   text-align: center;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: bold;
 }
 .calendar_days {
   display: flex;
@@ -3123,17 +3123,21 @@ html.menu-opened body {
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 400;
   color: var(--text-color);
   background-color: #fff;
   transition: all 0.3s;
+  text-align: center;
 }
+
 .calendar_days .day:not(.next):not(.prev):hover {
   color: #fff;
   background-color: var(--primary-color);
   transform: scale(1.05);
+  cursor: pointer;
 }
+
 .calendar_days .day.today {
   color: #fff;
   background-color: var(--primary-color);

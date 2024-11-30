@@ -59,8 +59,29 @@
 
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-    // lay ngay hien tai
+    // Danh sách các ngày lễ
+    const holidays = { 
+        "01-01": "New Year's Day", 
+        "01-26": "Australia Day", 
+        "02-14": "Valentine's Day", 
+        "04-01": "April Fool's Day", 
+        "04-22": "Earth Day",
+        "05-05": "Cinco de Mayo", 
+        "06-01": "Children's Day", 
+        "06-19": "Juneteenth", 
+        "06-21": "Summer Solstice", 
+        "07-14": "Bastille Day", 
+        "09-02": "Vietnam National Day", 
+        "10-03": "German Unity Day", 
+        "10-31": "Halloween", 
+        "11-01": "All Saints' Day", 
+        "11-11": "Veterans Day", 
+        "11-24": "Thanksgiving Day", 
+        "12-24": "Christmas Eve", 
+        "12-25": "Christmas Day", 
+        "12-31": "New Year's Eve"};
 
+    // lay ngay hien tai
     const date = new Date();
     let currentMonth = date.getMonth();
     let currentYear = date.getFullYear();
@@ -82,24 +103,23 @@
     
         let days = "";
 
-        
+        // các ngày từ last
         for (let x = firstDay.getDay(); x > 0; x--) {
             days += `<div class="day prev">${prevLastDayDate - x + 1}</div>`;
         }
 
         for (let i = 1; i <= lastDayDate; i++) {
-            
-            if (
-                i === new Date().getDate() &&
-                currentMonth === new Date().getMonth() &&
-                currentYear === new Date().getFullYear()
-            ) {
-                
-                days += `<div class="day today">${i}</div>`;
-            } else {
-                
-                days += `<div class="day ">${i}</div>`;
+            const currentDateString = `${(currentMonth + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+            let dayContent = i;
+
+            // Kiểm tra xem ngày có phải là ngày lễ không
+            if (holidays[currentDateString]) {
+                dayContent = holidays[currentDateString]; // Nếu là ngày lễ, thay tên ngày bằng tên lễ
+            } else if (i === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear()) {
+                dayContent = `<span class="today">${i}</span>`; // Đánh dấu ngày hôm nay
             }
+
+            days += `<div class="day">${dayContent}</div>`;
         }
 
         // next Month days

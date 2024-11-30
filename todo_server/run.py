@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
-import socket
-import threading
-import time
-from datetime import datetime
+# import socket
+# import threading
+# import time
 from call_api import *
 from datetime import datetime, timedelta
 import os
@@ -85,19 +84,6 @@ def search_logs():
 
     return jsonify({"logs": filtered_logs}), 200
 
-
-# ================================= Define route =================================
-
-# Tạo 1 login_required coi người dùng có đăng nhập hay chưa
-# def login_required(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         # Kiem tra co user_id trong session khong:
-#         if 'user' not in session:
-#             # flash("Vui lòng đăng nhập trước!", "warning")
-#             return redirect(url_for('login'))
-#         return f(*args, **kwargs)
-#     return decorated_function
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -579,7 +565,9 @@ def system_info():
 def calendar():
     if 'user' in session:
         user = session['user']
-        return render_template("calendar.html", user=user)
+        user_id = user.get('id')
+        projects = getProjectByUserId(user_id)
+        return render_template("calendar.html", user=user, projects=projects)
     else:
         return redirect(url_for('login'))
 

@@ -21,7 +21,7 @@
                 <div class="head-link-set">
                     <ul>
                         <li><a class="active" href="#">General</a></li>
-                        <li><a href="{{url_for('profile_timeoff')}}">Time Off</a></li>
+                        <li><a href="{{url_for('profile_timeoff')}}">Details</a></li>
                     </ul>
                 </div>
             </div>
@@ -35,11 +35,11 @@
                             <div class="card-body">
                                 <div class="company-logo">
                                     <form id="uploadLogoForm" enctype="multipart/form-data">
-                                        <label class="logo-upload" for="edit_img">
+                                        <!-- <label class="logo-upload" for="edit_img">
                                             <input type="file" id="edit_img" name="logo" />
                                             <a><i data-feather="edit"></i></a>
-                                        </label>
-                                        <img style="height: 140px; width: 140px; border: 0.65px solid black; object-fit: contain; border-radius: 10px;"
+                                        </label> -->
+                                        <img style="height: 250px; width: 250px; border: 1px solid orange; object-fit: contain; border-radius: 10px;"
                                             id="companyLogoPreview" src="{{ user['avatar'] }}" alt="logo" />
                                     </form>
                                 </div>

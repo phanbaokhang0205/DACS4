@@ -121,16 +121,12 @@
 										alt="sidebar_img"><span>Tasks</span></a>
 							</li>
 
-							<li>
+							<li class="{% if request.path == url_for('calendar') %}active{% endif %}">
 								<a href="{{url_for('calendar')}}"><img src="../static/assets/img/calendar.svg" alt="sidebar_img">
 									<span>Calendar</span></a>
 							</li>
-							<!-- <li>
-								<a href="important.html"><img src="../static/assets/img/review.svg"
-										alt="sidebar_img"><span>Important</span></a>
-							</li> -->
 							
-							<li>
+							<li class="{% if request.path == url_for('profile') %}active{% endif %}">
 								<a href="{{ url_for('profile')}}"><img src="../static/assets/img/profile.svg" alt="sidebar_img">
 									<span>Profile</span></a>
 							</li>
