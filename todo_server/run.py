@@ -112,7 +112,7 @@ def login():
                 else:
                     flash("Mật khẩu không đúng!", "danger")
                 
-        flash("Tên đăng nhập không tồn tại", "danger")
+            flash("Tên đăng nhập không tồn tại", "danger")
     return render_template('auth/login.html')
 
 
