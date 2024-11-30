@@ -10,12 +10,11 @@
                 <div class="breadcrumb-path mb-4">
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href=" {{ url_for('dashboard')}} "><img
-                                    src="templates/assets/img/dash.png" class="mr-2"
-                                    alt="breadcrumb" />Home</a>
+                                    src="../static/assets/img/dash.png" class="mr-2" alt="breadcrumb" />Home</a>
                         </li>
-                        <li class="breadcrumb-item active"> Settings</li>
+                        <li class="breadcrumb-item active"> Profiles</li>
                     </ul>
-                    <h3>Settings</h3>
+                    <h3>General</h3>
                 </div>
             </div>
             <div class="col-xl-12 col-sm-12 col-12 mb-4">
@@ -31,7 +30,7 @@
                     <div class="col-xl-6 col-sm-12 col-12">
                         <div class="card ">
                             <div class="card-header">
-                                <h2 class="card-titles" style="color: orangered;">Company Logo</h2>
+                                <h2 class="card-titles" style="color: orangered;">User Avatar</h2>
                             </div>
                             <div class="card-body">
                                 <div class="company-logo">
@@ -41,9 +40,7 @@
                                             <a><i data-feather="edit"></i></a>
                                         </label>
                                         <img style="height: 140px; width: 140px; border: 0.65px solid black; object-fit: contain; border-radius: 10px;"
-                                            id="companyLogoPreview"
-                                            src=""
-                                            alt="logo" />
+                                            id="companyLogoPreview" src="{{ user['avatar'] }}" alt="logo" />
                                     </form>
                                 </div>
                             </div>
@@ -51,50 +48,59 @@
                     </div>
                     <div class="col-xl-6 col-sm-12 col-12 ">
                         <div class="card ">
-                            <form id='companyForm'></form>
-                            <div class="card-header">
-                                <h2 class="card-titles" style="color: orange;">Company Information</h2>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-xl-12 col-sm-6 col-12 ">
-                                        <div class="form-group">
-                                            <label><b>Company Name</b></label>
-                                            <input type="text" id="name" name="name"
-                                                value="">
+                            <form id='companyForm' method="post" action="{{url_for('handle_update_user')}}">
+
+                                <div class="card-header">
+                                    <h2 class="card-titles" style="color: orange;">User Information</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-xl-12 col-sm-6 col-12 ">
+                                            <div class="form-group">
+                                                <label><b>Full Name</b></label>
+                                                <input value="{{user['fullname']}}" type="text" id="fullName"
+                                                    name="fullname">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-sm-6 col-12 ">
+                                            <div class="form-group">
+                                                <label><b>User Name</b></label>
+                                                <input value="{{user['username']}}" type="text" id="username"
+                                                    name="username">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-sm-6 col-12 ">
+                                            <div class="form-group">
+                                                <label><b>Phone Number</b></label>
+                                                <input value="{{user['phone']}}" type="text" id="phone"
+                                                    name="phone">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-sm-6 col-12 ">
+                                            <div class="form-group">
+                                                <label><b>Address</b></label>
+                                                <input value="{{user['address']}}" type="text" id="address"
+                                                    name="address">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-12 col-sm-6 col-12 ">
+                                            <div class="form-group">
+                                                <label><b>Link Avatar</b></label>
+                                                <input value="{{user['avatar']}}" type="text" id="avatar" name="avatar">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-xl-12 col-sm-6 col-12 ">
-                                        <div class="form-group">
-                                            <label><b>Company Url</b></label>
-                                            <input type="text" id="website" name="website"
-                                                value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-12 col-sm-6 col-12 ">
-                                        <div class="form-group">
-                                            <label><b>Company Industry</b></label>
-                                            <input type="text" id="industry" name="industry"
-                                                value="">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-12 col-sm-6 col-12 ">
-                                        <div class="form-group">
-                                            <label><b>Company CEO Name</b></label>
-                                            <input type="text" id="ceo_name" name="ceo_name"
-                                                value="">
-                                        </div>
+                                    <div class="form-btn">
+                                        <button type="submit" class="btn btn-apply" id="updateCompanyBtn">Save
+                                            Changes</button>
                                     </div>
                                 </div>
-                                <div class="form-btn">
-                                    <button type="submit" class="btn btn-apply" id="updateCompanyBtn">Save
-                                        Changes</button>
-                                </div>
-                            </div>
                             </form>
+                            <!-- </form> -->
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

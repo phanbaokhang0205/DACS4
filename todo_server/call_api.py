@@ -1,6 +1,7 @@
 import requests
 
-BASE_URL = "http://127.0.0.1:5000/"
+# BASE_URL = "http://127.0.0.1:5000/"
+BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
 
 # =================================Call api =================================
 # ======================= TASK =================================
@@ -109,6 +110,24 @@ def update_task(task_id, data):
             return response.json()['error']
     except Exception as e:
         return f"An error occurred: {e}"
+    
+def update_user(id, data):
+    try:
+        response = requests.put(f'{BASE_URL}/users/{id}', json=data)
+        if response.status_code == 200:
+            return response.json()['message']
+        else:
+            return response.json()['error']
+    except Exception as e:
+        return f"An error occurred: {e}"
+
+def get_user_by_id(id):
+    response = requests.get(f'{BASE_URL}/users/{id}')
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return response.json()['error']
+
     
 # ======================= PROJECT =================================
 def getProjects():
