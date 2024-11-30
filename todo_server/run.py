@@ -103,14 +103,17 @@ def login():
         # Kiểm tra từng người dùng để tìm user có username và password khớp
         for user in users:
             if user.get('username') == username:
-                if check_password_hash(user.get('password'), password):
-                    if update_user_status(user.get('id'), True):
-                    # Lưu thông tin vào session sau khi xác thực thành công
-                        session['user'] = user
-                        return redirect("/")
-
+                if user.get('isActive') == False:
+                    flash("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!", "danger")
                 else:
-                    flash("Mật khẩu không đúng!", "danger")
+                    if check_password_hash(user.get('password'), password):
+                        if update_user_status(user.get('id'), True):
+                        # Lưu thông tin vào session sau khi xác thực thành công
+                            session['user'] = user
+                            return redirect("/")
+
+                    else:
+                        flash("Mật khẩu không đúng!", "danger")
                 
             flash("Tên đăng nhập không tồn tại", "danger")
     return render_template('auth/login.html')
@@ -403,6 +406,15 @@ def handle_update_project():
     else:
         return redirect(url_for('login'))
     
+@app.route("/profile", methods=['GET'])
+def profile():
+    user = getUsers()
+    return render_template("profile.html", user = user)
+
+@app.route("/profile_timeoff", methods=['GET'])
+def profile_timeoff():
+    user = getUsers()
+    return render_template("profile2.html", user = user)
 #=================================USER HOST================================
 def track_client(client_ip):
     user_host = get_host_by_ip(client_ip)

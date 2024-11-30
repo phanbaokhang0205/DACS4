@@ -1,0 +1,102 @@
+{% extends "app.html" %}
+
+{% block title %}Profile Page{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="row">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="breadcrumb-path mb-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href=" {{ url_for('dashboard')}} "><img
+                                    src="templates/assets/img/dash.png" class="mr-2"
+                                    alt="breadcrumb" />Home</a>
+                        </li>
+                        <li class="breadcrumb-item active"> Settings</li>
+                    </ul>
+                    <h3>Settings</h3>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                <div class="head-link-set">
+                    <ul>
+                        <li><a class="active" href="#">General</a></li>
+                        <li><a href="{{url_for('profile_timeoff')}}">Time Off</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-xl-12 col-sm-12 col-12 ">
+                <div class="row">
+                    <div class="col-xl-6 col-sm-12 col-12">
+                        <div class="card ">
+                            <div class="card-header">
+                                <h2 class="card-titles" style="color: orangered;">Company Logo</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="company-logo">
+                                    <form id="uploadLogoForm" enctype="multipart/form-data">
+                                        <label class="logo-upload" for="edit_img">
+                                            <input type="file" id="edit_img" name="logo" />
+                                            <a><i data-feather="edit"></i></a>
+                                        </label>
+                                        <img style="height: 140px; width: 140px; border: 0.65px solid black; object-fit: contain; border-radius: 10px;"
+                                            id="companyLogoPreview"
+                                            src=""
+                                            alt="logo" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-sm-12 col-12 ">
+                        <div class="card ">
+                            <form id='companyForm'></form>
+                            <div class="card-header">
+                                <h2 class="card-titles" style="color: orange;">Company Information</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-xl-12 col-sm-6 col-12 ">
+                                        <div class="form-group">
+                                            <label><b>Company Name</b></label>
+                                            <input type="text" id="name" name="name"
+                                                value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-sm-6 col-12 ">
+                                        <div class="form-group">
+                                            <label><b>Company Url</b></label>
+                                            <input type="text" id="website" name="website"
+                                                value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-sm-6 col-12 ">
+                                        <div class="form-group">
+                                            <label><b>Company Industry</b></label>
+                                            <input type="text" id="industry" name="industry"
+                                                value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12 col-sm-6 col-12 ">
+                                        <div class="form-group">
+                                            <label><b>Company CEO Name</b></label>
+                                            <input type="text" id="ceo_name" name="ceo_name"
+                                                value="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-btn">
+                                    <button type="submit" class="btn btn-apply" id="updateCompanyBtn">Save
+                                        Changes</button>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
