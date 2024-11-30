@@ -1,0 +1,157 @@
+{% extends "app.html" %}
+
+{% block title %}Calendar Page{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="calendar_container">
+        <div class="calendar">
+            <div class="calendar_header">
+                <div class="calendar_month"></div>
+                <div class="calendar_btns">
+                    <div class="btn today-btn">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="btn prev-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </div>
+                    <div class="btn next-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="calendar_weekdays">
+                <div class="day">Sun</div>
+                <div class="day">Mon</div>
+                <div class="day">Tue</div>
+                <div class="day">Wed</div>
+                <div class="day">Thu</div>
+                <div class="day">Fri</div>
+                <div class="day">Sat</div>
+            </div>
+            <div class="calendar_days">
+                <!-- lets add days using js -->
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const daysContainer = document.querySelector('.calendar_days'),
+    nextBtn = document.querySelector(".next-btn"),
+    prevBtn = document.querySelector(".prev-btn"),
+    month = document.querySelector(".calendar_month"),
+    todayBtn = document.querySelector(".today-btn");
+
+    const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    // lay ngay hien tai
+
+    const date = new Date();
+    let currentMonth = date.getMonth();
+    let currentYear = date.getFullYear();
+
+    function renderCalendar() {
+        
+        date.setDate(1);
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const lastDay = new Date(currentYear, currentMonth + 1, 0);
+        const lastDayIndex = lastDay.getDay();
+        const lastDayDate = lastDay.getDate();
+        const prevLastDay = new Date(currentYear, currentMonth, 0);
+        const prevLastDayDate = prevLastDay.getDate();
+        const nextDays = 7 - lastDayIndex - 1;
+
+        
+        month.innerHTML = `${months[currentMonth]} ${currentYear}`;
+
+    
+        let days = "";
+
+        
+        for (let x = firstDay.getDay(); x > 0; x--) {
+            days += `<div class="day prev">${prevLastDayDate - x + 1}</div>`;
+        }
+
+        for (let i = 1; i <= lastDayDate; i++) {
+            
+            if (
+                i === new Date().getDate() &&
+                currentMonth === new Date().getMonth() &&
+                currentYear === new Date().getFullYear()
+            ) {
+                
+                days += `<div class="day today">${i}</div>`;
+            } else {
+                
+                days += `<div class="day ">${i}</div>`;
+            }
+        }
+
+        // next Month days
+        
+        for (let j = 1; j <= nextDays; j++) {
+            days += `<div class="day next">${j}</div>`;
+        }
+
+        
+        hideTodayBtn();
+        daysContainer.innerHTML = days;
+    }
+
+    renderCalendar();
+
+    nextBtn.addEventListener("click", () => {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        renderCalendar();
+    });
+
+    // prev monyh btn
+    prevBtn.addEventListener("click", () => {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    });
+
+    // go to today
+    todayBtn.addEventListener("click", () => {
+        currentMonth = date.getMonth();
+        currentYear = date.getFullYear();
+
+        renderCalendar();
+    });
+
+
+    function hideTodayBtn() {
+        if (
+            currentMonth === new Date().getMonth() &&
+            currentYear === new Date().getFullYear()
+        ) {
+            todayBtn.style.display = "none";
+        } else {
+            todayBtn.style.display = "flex";
+        }
+    }
+</script>
+{% endblock %}

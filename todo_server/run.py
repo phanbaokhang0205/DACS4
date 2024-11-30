@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import socket, threading, time
 from datetime import datetime
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 # def get_server_ip():
@@ -43,7 +43,7 @@ def log_request_info(response):
     client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     
     # Lấy địa chỉ IP của server
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    server_ip = "http://127.0.0.1:5000/"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
@@ -466,6 +466,15 @@ def system_info():
     info = get_system_info()
     return jsonify(info)
 
+# Calendar
+@app.route('/calendar', methods=['GET'])
+def calendar():
+    if 'user' in session:
+        user = session['user']
+        return render_template("calendar.html", user=user)
+    else:
+        return redirect(url_for('login'))
+
 #=================================MAIN=======================================
 
 
@@ -478,3 +487,4 @@ if __name__ == '__main__':
     # flask_thread.start()
 
     app.run(debug=True,host='0.0.0.0', port=int(os.environ.get('PORT', 5001)))
+
