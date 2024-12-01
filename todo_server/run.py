@@ -473,10 +473,10 @@ def profile_timeoff():
         user_id = user.get('id')
         user_created = user.get('create_at')
 
-        project_count = len(getProjectByUserId(user_id))
-        latest_project = max(getProjectByUserId(user_id),
+        projects = getProjectByUserId(user_id)
+        project_count = len(projects) if projects else 0
+        latest_project = "No Project" if project_count == 0 else max(projects,
                              key=lambda x: x['created_at'])
-
         tasks = getTaskByUserId(user_id)
         high = [task for task in tasks if task['priority'] == 'HIGH']
         medium = [task for task in tasks if task['priority'] == 'MEDIUM']
