@@ -9,9 +9,27 @@ import os
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 
+from flask_mail import Mail, Message
+import random
+import string
+
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
+
+# Thêm cấu hình email vào app
+app.config['MAIL_SERVER'] = 'smtp.gmail.com' # Máy chủ SMTP của Gmail
+app.config['MAIL_PORT'] = 587 # Cổng SMTP của Gmail (là cổng tiêu chuẩn của SMTP và TLS)
+# Gmail bắt buộc phải dùng TLS cho SMTP để mã hóa dữ liệu được truyền giữa mail server và ứng dụng
+app.config['MAIL_USE_TLS'] = True # Sử dụng Transport Layer Security (TLS)
+app.config['MAIL_USERNAME'] = 'phanbaokhang0205@gmail.com' # Email của server
+app.config['MAIL_PASSWORD'] = 'dxvg igji irnt yzst' # Mật khẩu ứng dụng
+
+mail = Mail(app)
+
+def generate_otp():
+    # Tạo mã OTP 6 chữ số
+    return ''.join(random.choices(string.digits, k=6))
 
 # def get_server_ip():
 #     hostname = socket.gethostname()
@@ -181,6 +199,131 @@ def logout():
 
     return redirect(url_for('login'))
 
+@app.route('/forgotPassword', methods=['GET', 'POST'])
+def forgotPassword():
+    if request.method == 'POST':
+        username = request.form.get('user_username')
+        email = request.form.get('user_email')
+        
+        # Kiểm tra username và email có tồn tại trong database
+        users = getUsers()
+        # next() sẽ lấy phần tử đầu tiên từ iterator
+        # None là giá trị mặc định sẽ được trả về nếu không tìm thấy kết quả nào
+        user = next((user for user in users if user['username'] == username and user['email'] == email), None)
+        
+        if user:
+            # Tạo OTP
+            otp = generate_otp()
+            
+            # Lưu OTP vào session để verify sau này
+            session['reset_otp'] = otp
+            session['reset_user_id'] = user['id']
+            
+            # Gửi email
+            msg = Message('OTP code to reset password',
+                        sender=app.config['MAIL_USERNAME'],
+                        recipients=[email])
+            
+            msg.body = f'''
+            Hello {username},
+            
+            The OTP code to reset your password is: {otp}
+            
+            This code will expire in 5 minutes.
+            
+            If you did not request a password reset, please ignore this email.
+            '''
+            
+            try:
+                mail.send(msg)
+                flash('The OTP code was sent to your email!', 'success')
+                return redirect(url_for('resetPassword'))
+            except Exception as e:
+                flash('Có lỗi xảy ra khi gửi email. Vui lòng thử lại!', 'danger')
+                print(f"Lỗi gửi mail: {e}")
+        else:
+            flash('Username or email is incorrect!', 'danger')
+            
+    return render_template('auth/forgotPassword.html')
+
+@app.route('/resetPassword', methods=['GET', 'POST'])
+def resetPassword():
+    if request.method == 'POST':
+        otp = request.form.get('otp_code')
+        new_password = request.form.get('new_password')
+        
+        if 'reset_otp' not in session or 'reset_user_id' not in session:
+            flash('Session was expired!', 'danger')
+            return redirect(url_for('forgotPassword'))
+            
+        # Kiểm tra OTP và hiển thị thông báo tương ứng
+        stored_otp = session['reset_otp']
+        if otp != stored_otp:
+            flash('OTP code is incorrect!', 'danger')
+            return render_template('auth/resetPassword.html')
+            
+        # Hash mật khẩu mới và tiếp tục xử lý...
+        hashed_password = generate_password_hash(new_password)
+        # Cập nhật mật khẩu mới vào database
+        user_id = session['reset_user_id']
+        user = get_user_by_id(user_id)
+        if user:
+            data = {
+                **user,
+                "password": hashed_password
+            }
+            if update_user(user_id, data):
+                # Xóa session
+                session.pop('reset_otp', None)
+                session.pop('reset_user_id', None)
+                
+                flash('Reset password successfully!', 'success')
+                return redirect(url_for('login'))
+        
+        flash('Có lỗi xảy ra, vui lòng thử lại!', 'danger')
+    return render_template('auth/resetPassword.html')
+
+@app.route('/changePassword', methods=['GET', 'POST'])
+def changePassword():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+        
+    user = session['user']
+    message = None  # Khởi tạo biến message
+    
+    if request.method == 'POST':
+        current_password = request.form.get('currentPassword')
+        new_password = request.form.get('newPassword')
+        confirm_password = request.form.get('confirmPassword')
+        
+        # Kiểm tra mật khẩu hiện tại có đúng không
+        if not check_password_hash(user['password'], current_password):
+            message = 'Current password is incorrect!'
+            return render_template('changePassword.html', user=user, message=message)
+            
+        # Kiểm tra mật khẩu mới và xác nhận mật khẩu
+        if new_password != confirm_password:
+            message = 'New password and confirm password do not match!'
+            return render_template('changePassword.html', user=user, message=message)
+            
+        # Hash mật khẩu mới
+        hashed_password = generate_password_hash(new_password)
+        
+        # Cập nhật mật khẩu mới vào database
+        user_data = {
+            **user,
+            "password": hashed_password
+        }
+        
+        if update_user(user['id'], user_data):
+            # Cập nhật session với thông tin mới
+            session['user'] = get_user_by_id(user['id'])
+            message = 'Đổi mật khẩu thành công!'
+            return redirect(url_for('profile'))
+        else:
+            message = 'Có lỗi xảy ra, vui lòng thử lại!'
+            
+    return render_template('changePassword.html', user=user, message=message)
 
 @app.route('/')
 # @login_required
