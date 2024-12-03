@@ -3148,6 +3148,17 @@ html.menu-opened body {
 }
 
 
+.backgr-task-complete {
+	background-color: #E7F5DC;
+    color: #721c24; 
+	font-weight: 300;
+}
+
+.backgr-high-priority {
+	color: #b5ddc2;
+}
+
+
 .fc-toolbar h2 {
 	font-size: 18px;
 	font-weight: 600;

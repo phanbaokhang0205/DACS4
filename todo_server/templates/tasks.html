@@ -32,6 +32,21 @@
                 <div class="card">
                     <div class="table-heading">
                         <h2>All Tasks</h2>
+                        <div class="container mt-3">
+                            {% with messages = get_flashed_messages(with_categories=True) %}
+                            {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <!-- Thay đổi nút đóng bằng Font Awesome -->
+                                <!-- <button type="button" class="close" data-bs-dismiss="alert" aria-label="Đóng">
+                                    <i class="fa fa-times"></i>
+                                </button> -->
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                            {% endwith %}
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table  custom-table no-footer">
@@ -48,7 +63,7 @@
                             </thead>
                             <tbody>
                                 {% for t in tasks %}
-                                <tr>
+                                <tr {% if t.status == 'COMPLETED' %} class="backgr-task-complete" {% endif %}>
                                     <td data-toggle="modal" data-target="#detailsTask" 
                                     data-id="{{ t.id }}" data-title="{{ t.title }}" data-project_id="{{ t.project_id }}"
                                     data-description="{{ t.description }}" data-due="{{ t.due_day }}" 
@@ -71,16 +86,8 @@
                                                 Done</option>
                                         </select>
                                     </td>
-                                    <td class="tab-select tab-2">
-                                        <select class="select" style="padding: 10px 20px; font-weight: bold;"
-                                            onchange="changeColor(this)">
-                                            <option value="low" {% if t.priority=='LOW' %}selected{% endif %}>Low
-                                            </option>
-                                            <option value="medium" {% if t.priority=='MEDIUM' %}selected{% endif %}>
-                                                Medium</option>
-                                            <option value="high" {% if t.priority=='HIGH' %}selected{% endif %}>High
-                                            </option>
-                                        </select>
+                                    <td>
+                                        <label {% if t.priority=='HIGH' %} class="backgr-high-priority" {% endif %}>{{t.priority}}</label>
                                     </td>
                                     <td>
                                         <a data-toggle="modal" data-target="#updateTask" 

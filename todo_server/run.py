@@ -114,23 +114,29 @@ def login():
         # Lấy danh sách người dùng
         users = getUsers()
 
-        # Kiểm tra từng người dùng để tìm user có username và password khớp
-        for user in users:
-            if user.get('username') == username:
-                if user.get('isActive') == False:
-                    flash(
-                        "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Admin!", "danger")
-                else:
-                    if check_password_hash(user.get('password'), password):
-                        if update_user_status(user.get('id'), True):
-                            # Lưu thông tin vào session sau khi xác thực thành công
-                            session['user'] = user
-                            return redirect("/")
-                    else:
-                        flash("Mật khẩu không đúng!", "danger")
+        # Tìm user có username khớp
+        user = next((u for u in users if u.get('username') == username), None)
+
+        if not user:
+            # Nếu không tìm thấy username
+            flash("Username does not exist", "danger")
+        else:
+            # Kiểm tra trạng thái tài khoản
+            if not user.get('isActive'):
+                flash("Your account has been locked. Please contact Admin!", "danger")
             else:
-                flash("Tên đăng nhập không tồn tại", "danger")
+                # Kiểm tra mật khẩu
+                if check_password_hash(user.get('password'), password):
+                    # Cập nhật trạng thái đăng nhập
+                    if update_user_status(user.get('id'), True):
+                        # Lưu thông tin vào session sau khi xác thực thành công
+                        session['user'] = user
+                        return redirect("/")
+                else:
+                    flash("Password is incorrect!", "danger")
+
     return render_template('auth/login.html')
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -159,7 +165,7 @@ def register():
 
             # Kiểm tra nếu password và password_again khớp
             if password != password_again:
-                flash("Mật khẩu và xác nhận mật khẩu không khớp!", "danger")
+                flash("Password and confirm password do not match!", "danger")
                 return redirect(url_for('register'))
 
             data = {
@@ -178,7 +184,7 @@ def register():
             addUser(**data)
             print(data)
 
-            flash("Đăng kí tài khoản thành công! Hãy đăng nhập nhé", "success")
+            flash("Account registration successful! Now you can log in", "success")
             return redirect(url_for('login'))
         except Exception as e:
             # Xử lý lỗi, ghi log và thông báo cho người dùng
@@ -239,7 +245,7 @@ def forgotPassword():
                 flash('The OTP code was sent to your email!', 'success')
                 return redirect(url_for('resetPassword'))
             except Exception as e:
-                flash('Có lỗi xảy ra khi gửi email. Vui lòng thử lại!', 'danger')
+                flash('An error occurred while sending email. Please try again!', 'danger')
                 print(f"Lỗi gửi mail: {e}")
         else:
             flash('Username or email is incorrect!', 'danger')
@@ -280,7 +286,7 @@ def resetPassword():
                 flash('Reset password successfully!', 'success')
                 return redirect(url_for('login'))
         
-        flash('Có lỗi xảy ra, vui lòng thử lại!', 'danger')
+        flash('An error occurred, please try again!', 'danger')
     return render_template('auth/resetPassword.html')
 
 @app.route('/changePassword', methods=['GET', 'POST'])
@@ -408,8 +414,16 @@ def tasks():
                 tasks = getTaskBySearching(user_id, title)
             else:
                 tasks = getTaskByUserId(user_id)
+            
+            # Kiểm tra task gần đến hạn
+            today = datetime.now()
+            for task in tasks:
+                # Định dạng ngày tháng từ API
+                due_day = datetime.strptime(task['due_day'], "%a, %d %b %Y %H:%M:%S GMT")
+                if 0 <= (due_day - today).days <= 3:
+                    flash(f'Task "{task["title"]}" is near its deadline!', 'warning')
 
-        return render_template('tasks.html', projects=projects, tasks=tasks, user=user)
+            return render_template('tasks.html', projects=projects, tasks=tasks, user=user)
 
     else:
         return redirect(url_for('login'))
