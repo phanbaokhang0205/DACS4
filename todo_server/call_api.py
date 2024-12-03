@@ -1,7 +1,7 @@
 import requests
 
-BASE_URL = "http://127.0.0.1:5000/"
-# BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+# BASE_URL = "http://127.0.0.1:5000/"
+BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
 
 # =================================Call api =================================
 # ======================= TASK =================================
@@ -256,7 +256,7 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
-    url = 'https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/users'
+    url = 'http://127.0.0.1:5000/users'
     payload = {
         "fullname": fullname,
         "age": age,
