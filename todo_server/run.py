@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 # import socket
 # import threading
 # import time
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -48,7 +48,8 @@ def log_request_info(response):
 
     # Lấy địa chỉ IP của server
 
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    # server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    server_ip = "http://127.0.0.1:5000/"
     
     # Lấy phương thức HTTP (GET, POST, ...)
     method = request.method
