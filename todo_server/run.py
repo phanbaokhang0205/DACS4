@@ -59,9 +59,7 @@ def format_date(date_string):
 @app.after_request
 def log_request_info(response):
     # Lấy IP client theo thứ tự ưu tiên
-    client_ip = request.headers.get('X-Real-IP') or \
-                request.headers.get('X-Forwarded-For', '').split(',')[0] or \
-                request.remote_addr
+    client_ip = get_client_ip()
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
