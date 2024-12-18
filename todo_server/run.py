@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request, redirect, url_for, flash, 
 # import socket
 # import threading
 # import time
-from call_api import *
+from todo_server.call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -72,7 +72,7 @@ def log_request_info(response):
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-    server_ip = "http://127.0.0.1:5000/"
+    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
