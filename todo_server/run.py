@@ -72,7 +72,7 @@ def log_request_info(response):
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    server_ip = "https://flask-webserver-e07c23893a36.herokuapp.com/"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
