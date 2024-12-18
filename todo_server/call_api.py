@@ -256,7 +256,7 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
-    url = 'https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/users'
+    url = f'{BASE_URL}/users'
     payload = {
         "fullname": fullname,
         "age": age,

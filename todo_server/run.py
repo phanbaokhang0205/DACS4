@@ -58,21 +58,14 @@ def format_date(date_string):
 
 @app.after_request
 def log_request_info(response):
-    # Lấy thời gian hiện tại
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Lấy địa chỉ IP của client, kiểm tra header 'X-Forwarded-For' nếu có
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-
-    # Lấy địa chỉ IP của server
-
-    # server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
-    server_ip = "http://127.0.0.1:5000/"
+    # Lấy IP client theo thứ tự ưu tiên
+    client_ip = request.headers.get('X-Real-IP') or \
+                request.headers.get('X-Forwarded-For', '').split(',')[0] or \
+                request.remote_addr
     
-    # Lấy phương thức HTTP (GET, POST, ...)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-
-    # Lấy mã trạng thái HTTP (200, 404, ...)
+    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
@@ -667,11 +660,21 @@ def track_client(client_ip):
         return new_host
     return user_host
 
+def get_client_ip():
+    # Kiểm tra các header phổ biến của proxy
+    if request.environ.get('HTTP_X_FORWARDED_FOR'):
+        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0]
+    elif request.environ.get('HTTP_X_REAL_IP'):
+        return request.environ['HTTP_X_REAL_IP']
+    elif request.environ.get('HTTP_CF_CONNECTING_IP'):  # Cloudflare
+        return request.environ['HTTP_CF_CONNECTING_IP']
+    return request.remote_addr
 
 @app.before_request
 def track_client_request():
-    global client_ip
-    client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    # global client_ip
+    # client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    client_ip = get_client_ip()
     track_client(client_ip)
 
 
