@@ -256,7 +256,11 @@ def getUsers():
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
+# <<<<<<< HEAD
+#     url = 'http://127.0.0.1:5000/users'
+# =======
     url = f'{BASE_URL}/users'
+# >>>>>>> f1a3a335323dee11601b7a6571d00854eb8bf040
     payload = {
         "fullname": fullname,
         "age": age,
