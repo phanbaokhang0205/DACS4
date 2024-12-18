@@ -13,6 +13,9 @@ from flask_mail import Mail, Message
 import random
 import string
 
+from flask import request
+client_ip = request.remote_addr
+
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
@@ -695,7 +698,9 @@ def update_request_status(response):
     """
     Cập nhật success hoặc fail dựa trên trạng thái của response.
     """
-    global client_ip
+    # global client_ip
+    # Lấy IP của client
+    client_ip = request.remote_addr
     status_code = response.status_code
 
     if 200 <= status_code < 300:
