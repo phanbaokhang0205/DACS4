@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, g, render_template, request, redirect, url_for, flash, session, jsonify
 # import socket
 # import threading
 # import time
@@ -55,13 +55,20 @@ def format_date(date_string):
 # Hàm log request vào log_list
 # Log request thông tin sau khi xử lý request
 
+def get_client_ip():
+    # Kiểm tra các header phổ biến của proxy
+    if request.environ.get('HTTP_X_FORWARDED_FOR'):
+        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0]
+    elif request.environ.get('HTTP_X_REAL_IP'):
+        return request.environ['HTTP_X_REAL_IP']
+    elif request.environ.get('HTTP_CF_CONNECTING_IP'):  # Cloudflare
+        return request.environ['HTTP_CF_CONNECTING_IP']
+    return request.remote_addr
 
 @app.after_request
 def log_request_info(response):
     # Lấy IP client theo thứ tự ưu tiên
-    client_ip = request.headers.get('X-Real-IP') or \
-                request.headers.get('X-Forwarded-For', '').split(',')[0] or \
-                request.remote_addr
+    client_ip = get_client_ip()
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
@@ -674,42 +681,34 @@ def track_client(client_ip):
         return new_host
     return user_host
 
-def get_client_ip():
-    # Kiểm tra các header phổ biến của proxy
-    if request.environ.get('HTTP_X_FORWARDED_FOR'):
-        return request.environ['HTTP_X_FORWARDED_FOR'].split(',')[0]
-    elif request.environ.get('HTTP_X_REAL_IP'):
-        return request.environ['HTTP_X_REAL_IP']
-    elif request.environ.get('HTTP_CF_CONNECTING_IP'):  # Cloudflare
-        return request.environ['HTTP_CF_CONNECTING_IP']
-    return request.remote_addr
+
 
 @app.before_request
 def track_client_request():
-    # global client_ip
-    # client_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    client_ip = get_client_ip()
-    track_client(client_ip)
-
+    # Lưu client_ip vào g object của Flask
+    g.client_ip = get_client_ip()
+    track_client(g.client_ip)
 
 @app.after_request
 def update_request_status(response):
     """
     Cập nhật success hoặc fail dựa trên trạng thái của response.
     """
-    global client_ip
-    status_code = response.status_code
-
-    if 200 <= status_code < 300:
-        # Thành công (2xx)
-        user_host = get_host_by_ip(client_ip)
-        if user_host:
-            update_request(client_ip, True)
-    else:
-        # Thất bại (không phải 2xx)
-        user_host = get_host_by_ip(client_ip)
-        if user_host:
-            update_request(client_ip, False)
+    # Lấy client_ip từ g object
+    client_ip = g.get('client_ip')
+    
+    if client_ip:
+        status_code = response.status_code
+        if 200 <= status_code < 300:
+            # Thành công (2xx)
+            user_host = get_host_by_ip(client_ip)
+            if user_host:
+                update_request(client_ip, True)
+        else:
+            # Thất bại (không phải 2xx)
+            user_host = get_host_by_ip(client_ip)
+            if user_host:
+                update_request(client_ip, False)
 
     return response
 
