@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request, redirect, url_for, flash, 
 # import socket
 # import threading
 # import time
-from call_api import *
+from todo_server.call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -13,7 +13,7 @@ from flask_mail import Mail, Message
 import random
 import string
 
-from task_untils import countTasksByMonth
+from todo_server.task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
