@@ -3158,6 +3158,16 @@ html.menu-opened body {
 	color: #b5ddc2;
 }
 
+/* Add chart */
+.graphBox {
+	position: relative;
+	width: 100%;
+	padding: 20px;
+	background: #FFFFFF;
+	margin: 20px 0;
+	border-radius: 10px;
+}
+
 
 .fc-toolbar h2 {
 	font-size: 18px;

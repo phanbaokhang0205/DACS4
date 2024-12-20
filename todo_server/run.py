@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request, redirect, url_for, flash, 
 # import socket
 # import threading
 # import time
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -12,6 +12,8 @@ from werkzeug.security import check_password_hash
 from flask_mail import Mail, Message
 import random
 import string
+
+from task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
@@ -341,8 +343,7 @@ def dashboard():
         project_count = len(getProjectByUserId(user_id))
         task_count = len(getTaskByUserId(user_id))
         done_count = sum(1 for task in tasks if task['status'] == 'COMPLETED')
-        doing_count = sum(
-            1 for task in tasks if task['status'] == 'IN_PROGRESS')
+        doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
         todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
         recent_tasks = sorted(
             tasks, key=lambda x: x['due_day'], reverse=True)[:3]
@@ -730,7 +731,19 @@ def calendar():
         return render_template("calendar.html", user=user, projects=projects)
     else:
         return redirect(url_for('login'))
-
+    
+# Biểu đồ
+@app.route('/api/task-data')
+def get_monthlytasks_data():
+    if 'user' in session:
+        user = session['user']
+        user_id = user.get('id')
+        tasks = getTaskByUserId(user_id)
+        # Dem
+        monthly_task_data = countTasksByMonth(tasks)
+        return jsonify(monthly_task_data)
+    else:
+        return redirect(url_for('login'))
 #=================================MAIN=======================================
 
 

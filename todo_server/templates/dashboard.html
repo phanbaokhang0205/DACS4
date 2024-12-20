@@ -44,7 +44,7 @@
                     <div class="card board1 fill3 ">
                         <div class="card-body">
                             <div class="card_widget_header">
-                                <label>Task</label>
+                                <label>Tasks</label>
                                 <h4>{{task_count}}</h4>
                             </div>
                             <div class="card_widget_img">
@@ -95,6 +95,11 @@
                     </div>
                 </div>
             </div>
+
+            <div class="graphBox">
+                <canvas id="graph_task"></canvas>
+            </div>
+
             <div class="row">
                 <div class="col-xl-12 col-sm-12 col-12 d-flex">
                     <div class="card card-list flex-fill">
@@ -118,6 +123,79 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+
+    <script>
+        var gr_task = document.getElementById('graph_task').getContext('2d');
+
+// Fetch dữ liệu từ Flask API
+fetch('/api/task-data')
+    .then(response => response.json())
+    .then(data => {
+        // Chuẩn bị dữ liệu từ API
+        var completedTasks = [];
+        var inprogressTasks = [];
+        var todoTasks = [];
+
+        for (var i = 1; i <= 12; i++) {
+            completedTasks.push(data[i]?.completed || 0);
+            inprogressTasks.push(data[i]?.in_progress || 0);
+            todoTasks.push(data[i]?.todo || 0);
+        }
+
+        // Tạo biểu đồ
+        var myChart = new Chart(gr_task, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [
+                    {
+                        label: 'Tasks completed',
+                        data: completedTasks,
+                        backgroundColor: 'rgba(54, 162, 235, 0.65)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Tasks in progress',
+                        data: inprogressTasks,
+                        backgroundColor: 'rgba(255, 206, 86, 0.65)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Tasks todo',
+                        data: todoTasks,
+                        backgroundColor: 'rgba(255, 99, 132, 0.9)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                scales: {
+                    x: {
+                        stacked: false
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching task data:', error);
+    });
+
+    </script>
 
     <script>
         // Lấy ngày hiện tại
