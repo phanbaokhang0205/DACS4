@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, g
 # import socket
 # import threading
 # import time
@@ -12,6 +12,7 @@ from werkzeug.security import check_password_hash
 from flask_mail import Mail, Message
 import random
 import string
+from pytz import timezone, UTC
 
 from task_untils import countTasksByMonth
 
@@ -66,6 +67,7 @@ def get_client_ip():
     elif request.environ.get('HTTP_CF_CONNECTING_IP'):  # Cloudflare
         return request.environ['HTTP_CF_CONNECTING_IP']
     return request.remote_addr
+
 
 @app.after_request
 def log_request_info(response):
@@ -145,7 +147,8 @@ def login():
 def register():
     if request.method == 'POST':
         try:
-            now = datetime.now()
+            # now = datetime.now()
+            now = datetime.now(timezone('Asia/Ho_Chi_Minh'))  # Chuyển giờ sang múi giờ Việt Nam
 
             fullname = request.form.get('fullname')
             age = request.form.get('age')
@@ -157,11 +160,9 @@ def register():
             password = request.form.get('password')
             password_again = request.form.get('pass_again')
             avatar = request.form.get('avatar')
-            # create_at = datetime.now().isoformat()
-            create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            # create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            create_at = now.strftime("%a, %d %b %Y %H:%M:%S %z")
 
-            # Chuyển đổi định dạng ngày tháng
-            # create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
             hashed_password = generate_password_hash(password)
 
@@ -709,11 +710,11 @@ def track_client(client_ip):
 
 
 
-@app.before_request
-def track_client_request():
-    # Lưu client_ip vào g object của Flask
-    g.client_ip = get_client_ip()
-    track_client(g.client_ip)
+# @app.before_request
+# def track_client_request():
+#     # Lưu client_ip vào g object của Flask
+#     g.client_ip = get_client_ip()
+#     track_client(g.client_ip)
 
 @app.after_request
 def update_request_status(response):
@@ -721,7 +722,7 @@ def update_request_status(response):
     Cập nhật success hoặc fail dựa trên trạng thái của response.
     """
     # Lấy client_ip từ g object
-    client_ip = g.get('client_ip')
+    client_ip = get_client_ip()
     
     if client_ip:
         status_code = response.status_code
