@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, g
 # import socket
 # import threading
 # import time
@@ -65,6 +65,7 @@ def get_client_ip():
         return request.environ['HTTP_CF_CONNECTING_IP']
     return request.remote_addr
 
+
 @app.after_request
 def log_request_info(response):
     # Lấy IP client theo thứ tự ưu tiên
@@ -72,7 +73,8 @@ def log_request_info(response):
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-    server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    # server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+    server_ip = "http://192.168.144.162:5001"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
@@ -683,11 +685,11 @@ def track_client(client_ip):
 
 
 
-@app.before_request
-def track_client_request():
-    # Lưu client_ip vào g object của Flask
-    g.client_ip = get_client_ip()
-    track_client(g.client_ip)
+# @app.before_request
+# def track_client_request():
+#     # Lưu client_ip vào g object của Flask
+#     g.client_ip = get_client_ip()
+#     track_client(g.client_ip)
 
 @app.after_request
 def update_request_status(response):
@@ -695,7 +697,7 @@ def update_request_status(response):
     Cập nhật success hoặc fail dựa trên trạng thái của response.
     """
     # Lấy client_ip từ g object
-    client_ip = g.get('client_ip')
+    client_ip = get_client_ip()
     
     if client_ip:
         status_code = response.status_code
