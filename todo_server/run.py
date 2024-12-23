@@ -12,6 +12,9 @@ from werkzeug.security import check_password_hash
 from flask_mail import Mail, Message
 import random
 import string
+from pytz import timezone, UTC
+
+from task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
@@ -73,8 +76,7 @@ def log_request_info(response):
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-    # server_ip = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
-    server_ip = "http://192.168.144.162:5001"
+    server_ip = "https://flask-webserver-e07c23893a36.herokuapp.com/"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
@@ -145,7 +147,8 @@ def login():
 def register():
     if request.method == 'POST':
         try:
-            now = datetime.now()
+            # now = datetime.now()
+            now = datetime.now(timezone('Asia/Ho_Chi_Minh'))  # Chuyển giờ sang múi giờ Việt Nam
 
             fullname = request.form.get('fullname')
             age = request.form.get('age')
@@ -157,11 +160,9 @@ def register():
             password = request.form.get('password')
             password_again = request.form.get('pass_again')
             avatar = request.form.get('avatar')
-            # create_at = datetime.now().isoformat()
-            create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            # create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            create_at = now.strftime("%a, %d %b %Y %H:%M:%S %z")
 
-            # Chuyển đổi định dạng ngày tháng
-            # create_at = datetime.strptime(create_at, "%Y-%m-%d").strftime("%a, %d %b %Y %H:%M:%S GMT")
 
             hashed_password = generate_password_hash(password)
 
@@ -343,8 +344,7 @@ def dashboard():
         project_count = len(getProjectByUserId(user_id))
         task_count = len(getTaskByUserId(user_id))
         done_count = sum(1 for task in tasks if task['status'] == 'COMPLETED')
-        doing_count = sum(
-            1 for task in tasks if task['status'] == 'IN_PROGRESS')
+        doing_count = sum(1 for task in tasks if task['status'] == 'IN_PROGRESS')
         todo_count = sum(1 for task in tasks if task['status'] == 'TODO')
         recent_tasks = sorted(
             tasks, key=lambda x: x['due_day'], reverse=True)[:3]
@@ -732,7 +732,19 @@ def calendar():
         return render_template("calendar.html", user=user, projects=projects)
     else:
         return redirect(url_for('login'))
-
+    
+# Biểu đồ
+@app.route('/api/task-data')
+def get_monthlytasks_data():
+    if 'user' in session:
+        user = session['user']
+        user_id = user.get('id')
+        tasks = getTaskByUserId(user_id)
+        # Dem
+        monthly_task_data = countTasksByMonth(tasks)
+        return jsonify(monthly_task_data)
+    else:
+        return redirect(url_for('login'))
 #=================================MAIN=======================================
 
 
