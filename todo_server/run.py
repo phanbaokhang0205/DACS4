@@ -147,8 +147,8 @@ def login():
 def register():
     if request.method == 'POST':
         try:
-            # now = datetime.now()
-            now = datetime.now(timezone('Asia/Ho_Chi_Minh'))  # Chuyển giờ sang múi giờ Việt Nam
+            now = datetime.now()
+            # now = datetime.now(timezone('Asia/Ho_Chi_Minh'))  # Chuyển giờ sang múi giờ Việt Nam
 
             fullname = request.form.get('fullname')
             age = request.form.get('age')
@@ -160,8 +160,8 @@ def register():
             password = request.form.get('password')
             password_again = request.form.get('pass_again')
             avatar = request.form.get('avatar')
-            # create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
-            create_at = now.strftime("%a, %d %b %Y %H:%M:%S %z")
+            create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            # create_at = now.strftime("%a, %d %b %Y %H:%M:%S %z")
 
 
             hashed_password = generate_password_hash(password)
