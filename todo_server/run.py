@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 # import socket
 # import threading
 # import time
-from call_api import *
+from todo_server.call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -14,7 +14,7 @@ import random
 import string
 from pytz import timezone, UTC
 
-from task_untils import countTasksByMonth
+from todo_server.task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
