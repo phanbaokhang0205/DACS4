@@ -2,7 +2,7 @@ from flask import Flask, g, render_template, request, redirect, url_for, flash, 
 # import socket
 # import threading
 # import time
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -13,7 +13,7 @@ from flask_mail import Mail, Message
 import random
 import string
 
-from todo_server.task_untils import countTasksByMonth
+from task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
@@ -423,6 +423,31 @@ def tasks():
                 due_day = datetime.strptime(task['due_day'], "%a, %d %b %Y %H:%M:%S GMT")
                 if 0 <= (due_day - today).days <= 3:
                     flash(f'Task "{task["title"]}" is near its deadline!', 'warning')
+
+                    # Gửi mail thông báo
+                    try:
+                        msg = Message(
+                            subject=f'Task "{task["title"]}" is near deadline!',
+                            sender=app.config['MAIL_USERNAME'],
+                            recipients=[user['email']]
+                        )
+
+                        msg.body = f'''
+                        Hello {user['username']},
+
+                        The task "{task['title']}" is nearing its deadline.
+
+                        Due Date: {due_day.strftime('%Y-%m-%d %H:%M:%S')}
+
+                        Please complete it soon to avoid missing the deadline.
+
+                        Best regards,
+                        Task Management System
+                        '''
+                        mail.send(msg)
+                        print(f'Notification email sent for task "{task["title"]}".')
+                    except Exception as e:
+                        print(f"Error while sending email for task '{task['title']}': {e}")
 
             return render_template('tasks.html', projects=projects, tasks=tasks, user=user)
 
