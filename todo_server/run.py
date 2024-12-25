@@ -710,11 +710,11 @@ def track_client(client_ip):
 
 
 
-# @app.before_request
-# def track_client_request():
-#     # Lưu client_ip vào g object của Flask
-#     g.client_ip = get_client_ip()
-#     track_client(g.client_ip)
+@app.before_request
+def track_client_request():
+    # Lưu client_ip vào g object của Flask
+    g.client_ip = get_client_ip()
+    track_client(g.client_ip)
 
 @app.after_request
 def update_request_status(response):
