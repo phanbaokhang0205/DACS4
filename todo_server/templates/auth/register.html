@@ -7,9 +7,7 @@
 <style>
     .form-floating .custom-input {
         height: 50px;
-        /* Chiều cao tùy chỉnh */
         padding-right: 50px;
-        /* Điều chỉnh padding */
         background: #0000005c;
         border-width: 0;
         border-radius: 10px;
@@ -52,15 +50,15 @@
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                    <strong>{{ message }}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
         {% endif %}
         {% endwith %}
-        
+
         <form class="col" method="POST">
             <div class="row g-2 mb-3">
                 <div class="col-6 form-floating position-relative">
@@ -74,7 +72,7 @@
                     <input name="username" type="text" class="form-control custom-input" placeholder="username">
                     <label for="username">User Name</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/register_username.png"  alt="">
+                        <img class="icons" src="../../static/assets/icons/register_username.png" alt="">
                     </div>
                 </div>
             </div>
@@ -90,7 +88,7 @@
                     <input name="phone" type="text" class="form-control custom-input" placeholder="phone">
                     <label for="phone">Your phone</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/register_telephone.png"  alt="" >
+                        <img class="icons" src="../../static/assets/icons/register_telephone.png" alt="">
                     </div>
                 </div>
             </div>
@@ -100,7 +98,7 @@
                         placeholder="name@example.com">
                     <label for="floatingInput">Email address</label>
                     <div class="email_icon position-absolute ">
-                        <img class="icons" src="../../static/assets/icons/email.png"  alt="email" >
+                        <img class="icons" src="../../static/assets/icons/email.png" alt="email">
                     </div>
                 </div>
                 <div class="col input-group dropend">
@@ -123,24 +121,27 @@
                         placeholder="Password">
                     <label for="floatingPassword">Password</label>
                     <div class="password_icon position-absolute">
-                        <img class="icons" id="pass_eye" src="../../static/assets/icons/hidden.png" alt="password" onclick="togglePass()">
+                        <img class="icons" id="pass_eye" src="../../static/assets/icons/hidden.png" alt="password"
+                            onclick="togglePass()">
                     </div>
                 </div>
                 <div class="col form-floating position-relative">
                     <input name="age" type="text" class="form-control custom-input" id="age" placeholder="age">
                     <label for="age">Age</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/register_age.png"  alt="">
+                        <img class="icons" src="../../static/assets/icons/register_age.png" alt="">
                     </div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-12 form-floating position-relative">
-                    <input name="pass_again" type="password" class="form-control custom-input" id="pass_again" placeholder="Password">
+                    <input name="pass_again" type="password" class="form-control custom-input" id="pass_again"
+                        placeholder="Password">
                     <label for="pass_again">Password again</label>
                     <div class="password_icon position-absolute">
-                        <img class="icons" id="pass_again_eye" src="../../static/assets/icons/hidden.png"  height="30px" alt="pass_again" onclick="togglePassAgain()">
+                        <img class="icons" id="pass_again_eye" src="../../static/assets/icons/hidden.png" height="30px"
+                            alt="pass_again" onclick="togglePassAgain()">
                     </div>
                 </div>
             </div>
@@ -150,11 +151,12 @@
                     <input name="avatar" type="text" class="form-control custom-input" placeholder="link">
                     <label for="avatar">Link avatar</label>
                     <div class="info_icon position-absolute">
-                        <img class="icons" src="../../static/assets/icons/register_avatar.png"  alt="" aria-placeholder="Avatar">
+                        <img class="icons" src="../../static/assets/icons/register_avatar.png" alt=""
+                            aria-placeholder="Avatar">
                     </div>
                 </div>
             </div>
-            
+
 
             <div class="mt-5 d-flex justify-content-center mb-5">
                 <button type="submit" class="btn btn-primary sign_in_btn w-100"><b>Register</b></button>

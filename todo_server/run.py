@@ -1,8 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, g
-# import socket
-# import threading
-# import time
-from todo_server.call_api import *
+from call_api import *
 from datetime import datetime, timedelta
 import os
 
@@ -14,24 +11,23 @@ import random
 import string
 from pytz import timezone, UTC
 
-from todo_server.task_untils import countTasksByMonth
+from task_untils import countTasksByMonth
 
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 # Thêm cấu hình email vào app
-app.config['MAIL_SERVER'] = 'smtp.gmail.com' # Máy chủ SMTP của Gmail
-app.config['MAIL_PORT'] = 587 # Cổng SMTP của Gmail (là cổng tiêu chuẩn của SMTP và TLS)
-# Gmail bắt buộc phải dùng TLS cho SMTP để mã hóa dữ liệu được truyền giữa mail server và ứng dụng
-app.config['MAIL_USE_TLS'] = True # Sử dụng Transport Layer Security (TLS)
-app.config['MAIL_USERNAME'] = 'phanbaokhang0205@gmail.com' # Email của server
-app.config['MAIL_PASSWORD'] = 'dxvg igji irnt yzst' # Mật khẩu ứng dụng
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587 
+
+app.config['MAIL_USE_TLS'] = True 
+app.config['MAIL_USERNAME'] = 'phanbaokhang0205@gmail.com' 
+app.config['MAIL_PASSWORD'] = ''
 
 mail = Mail(app)
 
 def generate_otp():
-    # Tạo mã OTP 6 chữ số
     return ''.join(random.choices(string.digits, k=6))
 
 # def get_server_ip():
@@ -45,7 +41,6 @@ log_list = []
 
 
 def format_date(date_string):
-    # Giả sử date_string có định dạng Thu, 28 Nov 2024 00:00:00 GMT
     date_object = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %Z')
     return date_object.strftime('%Y-%m-%d')
 
@@ -54,9 +49,6 @@ def format_date(date_string):
 def format_date(date_string):
     date_object = datetime.strptime(date_string, '%a, %d %b %Y %H:%M:%S %Z')
     return date_object.strftime('%Y-%m-%d')
-
-# Hàm log request vào log_list
-# Log request thông tin sau khi xử lý request
 
 def get_client_ip():
     # Kiểm tra các header phổ biến của proxy
@@ -76,7 +68,7 @@ def log_request_info(response):
     
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     method = request.method
-    server_ip = "https://flask-webserver-e07c23893a36.herokuapp.com/"
+    server_ip = "http://127.0.0.1:5000/"
     status = response.status
 
     log_entry = f"{current_time}@{method}@{request.path}@{status}@{server_ip}@{client_ip}"
@@ -115,14 +107,13 @@ def login():
         username = request.form.get('user_username')
         password = request.form.get('user_password')
 
-        # Lấy danh sách người dùng
+
         users = getUsers()
 
-        # Tìm user có username khớp
+        
         user = next((u for u in users if u.get('username') == username), None)
 
         if not user:
-            # Nếu không tìm thấy username
             flash("Username does not exist", "danger")
         else:
             # Kiểm tra trạng thái tài khoản
@@ -148,7 +139,6 @@ def register():
     if request.method == 'POST':
         try:
             now = datetime.now()
-            # now = datetime.now(timezone('Asia/Ho_Chi_Minh'))  # Chuyển giờ sang múi giờ Việt Nam
 
             fullname = request.form.get('fullname')
             age = request.form.get('age')
@@ -161,7 +151,6 @@ def register():
             password_again = request.form.get('pass_again')
             avatar = request.form.get('avatar')
             create_at = now.strftime("%a, %d %b %Y %H:%M:%S GMT")
-            # create_at = now.strftime("%a, %d %b %Y %H:%M:%S %z")
 
 
             hashed_password = generate_password_hash(password)
@@ -203,7 +192,6 @@ def logout():
     if user:
         # Gọi hàm cập nhật trạng thái offline
         if update_user_status(user.get('id'), False):
-            # Xóa thông tin user khỏi session
             session.pop('user', None)
 
     return redirect(url_for('login'))
@@ -214,7 +202,6 @@ def forgotPassword():
         username = request.form.get('user_username')
         email = request.form.get('user_email')
         
-        # Kiểm tra username và email có tồn tại trong database
         users = getUsers()
         # next() sẽ lấy phần tử đầu tiên từ iterator
         # None là giá trị mặc định sẽ được trả về nếu không tìm thấy kết quả nào
@@ -310,22 +297,19 @@ def changePassword():
             message = 'Current password is incorrect!'
             return render_template('changePassword.html', user=user, message=message)
             
-        # Kiểm tra mật khẩu mới và xác nhận mật khẩu
         if new_password != confirm_password:
             message = 'New password and confirm password do not match!'
             return render_template('changePassword.html', user=user, message=message)
             
         # Hash mật khẩu mới
         hashed_password = generate_password_hash(new_password)
-        
-        # Cập nhật mật khẩu mới vào database
+       
         user_data = {
             **user,
             "password": hashed_password
         }
         
         if update_user(user['id'], user_data):
-            # Cập nhật session với thông tin mới
             session['user'] = get_user_by_id(user['id'])
             message = 'Đổi mật khẩu thành công!'
             return redirect(url_for('profile'))
@@ -335,7 +319,6 @@ def changePassword():
     return render_template('changePassword.html', user=user, message=message)
 
 @app.route('/')
-# @login_required
 def dashboard():
     if 'user' in session:
         user = session['user']
@@ -360,7 +343,6 @@ def dashboard():
 
 # ==========================TASK===============================
 @app.route('/tasks', methods=['GET', 'POST'])
-# @login_required
 def tasks():
     if 'user' in session:
         user = session['user']

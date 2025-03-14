@@ -1,14 +1,12 @@
 import requests
 
-# BASE_URL = "http://127.0.0.1:5000/"
-BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
+BASE_URL = "http://127.0.0.1:5000/"
+# BASE_URL = "https://flask-api-deploy-e1d2eecd08cb.herokuapp.com/"
 
-# =================================Call api =================================
 # ======================= TASK =================================
 def getTasks():
     base_url = f'{BASE_URL}/tasks'
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(base_url)
         
         if response.status_code == 200:
@@ -19,12 +17,11 @@ def getTasks():
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return []  
     
 def getTaskByUserId(user_id):
     url = f'{BASE_URL}/tasks/{user_id}'
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(url)
         
         if response.status_code == 200:
@@ -34,14 +31,13 @@ def getTaskByUserId(user_id):
             return []
 
     except requests.exceptions.RequestException as e:
-        print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        print(f"Có lỗi xảy ra: {e}")\
 
 
 def addTask(user_id, project_id, title, description, status, begin_day, due_day, priority):
     url = f'{BASE_URL}/tasks'
     
-    # Tạo payload cho các dữ liệu còn lại
+    # payload cho các dữ liệu còn lại
     payload = {
         "user_id": user_id,
         "project_id": project_id,
@@ -54,7 +50,7 @@ def addTask(user_id, project_id, title, description, status, begin_day, due_day,
     }
 
     try:
-        # Gửi yêu cầu POST với multipart/form-data (cho file)
+        # Gửi yêu cầu POST với multipart/form-data
         response = requests.post(url, data=payload)
         
         if response.status_code == 201:
@@ -77,19 +73,17 @@ def getTaskBySearching(user_id, keywords):
         'title': keywords  # Thêm từ khóa tìm kiếm vào query parameters
     }
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(base_url, params=params)
         
         if response.status_code == 200:
-            return response.json()  # Trả về danh sách task dưới dạng JSON
+            return response.json() 
         else:
             print(f"Không thể lấy dữ liệu: {response.status_code}")
-            return []  # Trả về danh sách rỗng nếu lỗi HTTP
+            return []  
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về danh sách rỗng nếu xảy ra lỗi yêu cầu
-
+        return []  
     
 def delete_task(task_id):
     try:
@@ -134,7 +128,6 @@ def getProjects():
     base_url = f'{BASE_URL}/projects'
 
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(base_url)
         
         if response.status_code == 200:
@@ -145,12 +138,11 @@ def getProjects():
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return [] 
     
 def getProjectByUserId(user_id):
     url = f'{BASE_URL}/projects/{user_id}'
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(url)
         
         if response.status_code == 200:
@@ -174,7 +166,6 @@ def addProject(user_id, name, description, created_at, updated_at):
     }
 
     try:
-        # Gửi yêu cầu POST
         response = requests.post(url, json=payload)
         
         if response.status_code == 201:
@@ -194,7 +185,7 @@ def getProjectBySearching(user_id, keywords):
         'name': keywords
     }
     try:
-        # Gửi yêu cầu GET đến API
+        
         response = requests.get(base_url, params=params)
         
         if response.status_code == 200:
@@ -205,7 +196,7 @@ def getProjectBySearching(user_id, keywords):
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return []  
 
 
 def delete_project(project_id):
@@ -234,10 +225,8 @@ def getUsers():
     base_url = f'{BASE_URL}/users'
 
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(base_url)
         
-        # Kiểm tra mã trạng thái
         if response.status_code == 200:
             # Chuyển đổi dữ liệu từ JSON thành Python dictionary
             data = response.json()
@@ -248,11 +237,11 @@ def getUsers():
             return users  # Trả về danh sách người dùng
         else:
             print(f"Không thể lấy dữ liệu111: {response.status_code}")
-            return []  # Trả về mảng rỗng nếu có lỗi
+            return []  
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return []  
     
 
 def addUser(fullname, age, gender, phone, address, email, username, password, avatar, create_at):
@@ -290,7 +279,7 @@ def update_user_status(user_id, is_online):
     try:
         response = requests.put(url, json={'isOnline': is_online})
         if response.status_code == 200:
-            return True  # Thành công
+            return True 
         else:
             print(f"Không thể cập nhật trạng thái: {response.status_code}")
             return False
@@ -316,7 +305,7 @@ def get_system_info():
 def get_all_host():
     url = f'{BASE_URL}/user_host'
     try:
-        # Gửi yêu cầu GET đến API
+       
         response = requests.get(url)
         
         if response.status_code == 200:
@@ -327,13 +316,12 @@ def get_all_host():
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return [] 
 
 
 def get_host_by_ip(client_ip):
     url = f'{BASE_URL}/user_host/{client_ip}'
     try:
-        # Gửi yêu cầu GET đến API
         response = requests.get(url)
         
         if response.status_code == 200:
@@ -344,7 +332,7 @@ def get_host_by_ip(client_ip):
 
     except requests.exceptions.RequestException as e:
         print(f"Có lỗi xảy ra: {e}")
-        return []  # Trả về mảng rỗng nếu có lỗi
+        return []  
     
 def addHost(client_ip, success, fail, created_at, updated_at):
     url = f'{BASE_URL}/user_host'
@@ -358,7 +346,6 @@ def addHost(client_ip, success, fail, created_at, updated_at):
     print("Payload being sent:", payload)  # Thêm dòng log để kiểm tra payload
 
     try:
-        # Gửi yêu cầu POST
         response = requests.post(url, json=payload)
         
         if response.status_code == 201:
@@ -380,7 +367,7 @@ def update_request(client_ip, isSuccess):
         })
         if response.status_code == 200:
             print(f"cập nhật trạng thái user_host thành công: {response.status_code}")
-            return True  # Thành công
+            return True  
         else:
             print(f"Không thể cập nhật trạng thái user_host: {response.status_code}")
             return False

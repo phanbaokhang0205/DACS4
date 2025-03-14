@@ -1,51 +1,3 @@
-# import tkinter as tk
-# import customtkinter as ctk
-# import requests
-
-# class SystemInfoApp:
-#     def __init__(self, root):
-#         self.root = root
-#         self.root.title("System Information")
-#         self.root.geometry("400x300")
-
-#         self.label_cpu = ctk.CTkLabel(self.root, text="CPU Usage: ", font=('Arial', 14))
-#         self.label_cpu.pack(pady=10)
-
-#         self.label_memory = ctk.CTkLabel(self.root, text="Memory Usage: ", font=('Arial', 14))
-#         self.label_memory.pack(pady=10)
-
-#         self.label_disk = ctk.CTkLabel(self.root, text="Disk Usage: ", font=('Arial', 14))
-#         self.label_disk.pack(pady=10)
-
-#         self.update_info()
-
-#     def update_info(self):
-#         try:
-#             data = get_system_info()
-
-#             cpu_text = f"CPU Usage: {data['cpu_usage']}%"
-#             memory_text = (f"Memory Usage: {data['used_memory']}GB / {data['total_memory']}GB "
-#                            f"({data['memory_usage_percent']}%)")
-#             disk_text = (f"Disk Usage: {data['used_disk']}GB / {data['total_disk']}GB "
-#                          f"({data['disk_usage_percent']}%)")
-
-#             self.label_cpu.configure(text=cpu_text)
-#             self.label_memory.configure(text=memory_text)
-#             self.label_disk.configure(text=disk_text)
-
-#         except Exception as e:
-#             self.label_cpu.configure(text="Failed to get data")
-#             print(e)
-
-#         # Cập nhật sau mỗi 5 giây
-#         self.root.after(5000, self.update_info)
-
-# if __name__ == '__main__':
-#     root = ctk.CTk()
-#     app = SystemInfoApp(root)
-#     root.mainloop()
-
-
 import customtkinter as ctk
 import psutil
 import threading
@@ -57,7 +9,6 @@ class SystemMonitorApp(ctk.CTk):
         self.title("System Monitor")
         self.geometry("500x300")
 
-        # Tạo các thanh trạng thái
         self.cpu_monitor = self.create_monitor_frame("CPU", "#76CF8C")
         self.cpu_monitor["frame"].pack(pady=10)
 
